@@ -98,6 +98,7 @@
 
 - draft PR #1: https://github.com/Kensan196948G/Drawing-to-4D-Studio/pull/1
 - base: `main` / head: `auto/phase1-mvp`
+- head SHA: `559a021`
 - CI: 未設定（`deploy/ci/ci.yml` の人間適用待ち）
 
 ## 5-2. WebUI実装（2026-11-18 09:35–09:53）

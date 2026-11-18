@@ -27,6 +27,7 @@
 | Preview 再起動 | `pnpm deploy:preview` | ビルド→再起動→healthz 200 / preview checks 7/7 | 2026-11-18 09:21 |
 | DB 復元 | `bash scripts/restore-drill.sh` | **PASS**（cases=2 / work_types=10 / elevations=20） | `docs/evidence/restore-drill.json` |
 | E2E | `pnpm test:e2e` | **9件成功**（F1/F2/F3・未確定ダイアログ・Empty・キーボード・smoke・screenshots・Standaloneオフライン） | `tests/e2e/*.spec.ts` |
+| 利用者受入 | PreviewでF1を実操作 | **確認済み**（2026-11-18 10:46 JST、回答「1」） | `docs/project/04-approval.md` |
 
 ## 2. 単体テストの内容
 

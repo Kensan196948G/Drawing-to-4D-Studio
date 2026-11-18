@@ -76,14 +76,14 @@ systemd unit と tunnel 設定は `deploy/systemd/` に置く（実装後）。
 | 静的配信 | 200、CSP / X-Frame-Options / nosniff 付与 |
 | API（カタログ） | 工種10件 / 辞書40件 / 案件 `SAMPLE-KANPEKI` |
 | UI配信 | origin `/` の title=`Drawing-to-4D Studio`、bundle に「工種の割り当て」を確認 |
-| F1 実操作（画面） | ローカルE2Eで成功（F1/F2/F3 ほか9件）。公開URLは **Accessログイン後の確認待ち** |
+| F1 実操作（画面） | **利用者が公開URLで確認済み**（2026-11-18 10:46 JST、Accessログイン後にF1を操作、回答「1」）。ローカルE2Eも9件成功 |
 | 保存→再読込 | APIレベルで成功（`VERIFY-CORE-01`、66要素・10工程・20割当・10標高） |
 | スクリーンショット | `docs/evidence/screens/01-import.png` 〜 `06-save-dialog.png`（ローカルE2Eで撮影） |
 
 ### 注意
 
 - 公開URLは Cloudflare Access で保護されている。`/healthz` のみ bypass。
-- 画面の実操作確認は、Access へログインして公開URL上で行う（AIはOTP入力を行わない）。
+- 画面の実操作確認は、利用者が Access へログインして公開URL上で実施済み（2026-11-18 10:46 JST）。
 - ローカルE2E（`pnpm test:e2e`）は同じビルドを `127.0.0.1:8791` で配信して実行している。
 - プレースホルダUIのため、現時点の画面確認は「配信経路とDB接続」の確認に限る。
 

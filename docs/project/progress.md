@@ -6,7 +6,7 @@
 
 | 項目 | 状態 |
 | --- | --- |
-| フェーズ | P4/P5/P7/P8 完了（PR #1 Merged、main CI成功、Preview main配備）。残り: 公開URLのログイン後操作確認 |
+| フェーズ | **完了（MVP）**。PR #1〜#4 Merged、main CI成功、Preview配備、利用者受入済み（2026-11-18 10:46） |
 | repo / branch | `Kensan196948G/Drawing-to-4D-Studio` / `main` |
 | 基準SHA | `4b9c36c`（draft PR #1） |
 | 中核エンジン | 実装済み。単体テスト37件成功 |
@@ -110,6 +110,12 @@
 - 画面証拠 `docs/evidence/screens/01〜06.png`
 - Standalone 単一HTML（約716KB）
 - Preview にUIを配備（originで新UIを配信、publicはAccess 302）
+
+## 5-4. 利用者受入（2026-11-18 10:46 JST）
+
+- 利用者が Cloudflare Access 経由で Preview にログインし、F1（取り込み→工種→標高→3D→4D→保存）を操作。
+- 未確定レイヤの確認ダイアログ文言（修正版）について回答「1」（この文言でOK／Previewで確認できた）。
+- これをもって Phase 1 MVP の利用者受入とする。
 
 ## 5-3. 承認不要で完了した追加作業（2026-11-18 09:16–09:21）
 

@@ -1,7 +1,7 @@
 # Deployment — Cloudflare Preview（検証環境）
 
-> **状態: 未配備（2026-11-18）**。以下は実測にもとづく計画であり、実施後に「検証記録」を追記する。
-> 本番正式環境・本番DNS・本番自動配備は対象外。
+> **状態: Preview基盤 配備済み（2026-11-18 09:16 JST）。WebUIは設計承認待ちのプレースホルダ。**
+> UI実装後に再ビルド・再起動し、最終検証を追記する。本番正式環境・本番DNS・本番自動配備は対象外。
 
 ## 1. 構成（計画）
 
@@ -57,23 +57,33 @@ cloudflared tunnel route dns --overwrite-dns drawing-to-4d d4d.mirai-dx-platform
 
 systemd unit と tunnel 設定は `deploy/systemd/` に置く（実装後）。
 
-## 4. 検証記録（未実施）
+## 4. 検証記録（2026-11-18 09:16 JST / Preview基盤）
 
-| 項目 | 値 |
+| 項目 | 実測値 |
 | --- | --- |
-| 配備日時 | — |
-| URL | — |
-| 対象commit | — |
-| Tunnel ID | — |
-| systemd unit | — |
-| DB | `d4d_studio_preview`（未作成） |
-| Access | 未設定 |
-| `/healthz` | — |
-| F1 実操作 | — |
-| 保存→再読込 | — |
-| スクリーンショット | — |
+| URL | `https://d4d.mirai-dx-platform.com` |
+| 対象commit | `1939ea9`（WebUIはプレースホルダ。UI実装後に更新） |
+| 配備日時 | 2026-11-18 09:16 JST |
+| Tunnel | `drawing-to-4d` / `5cf82d33-4615-49c9-a4ba-a031310e4760` / 4コネクション（nrt01, nrt05, nrt14, nrt18） |
+| DNS | `d4d` CNAME → `5cf82d33-….cfargotunnel.com`（proxied） |
+| systemd | `drawing-to-4d-api.service`（active）、`drawing-to-4d-tunnel.service`（active） |
+| API | `127.0.0.1:8792` |
+| DB | `d4d_studio_preview`（migration/seed/verify PASS） |
+| Access | アプリ `Drawing-to-4D Studio Preview`（`84df45bf-b4cc-4b3a-8006-b42670668690`）、OTP、許可: `kensan1969@gmail.com` / `mirai-const.co.jp`、12時間 |
+| Access（health） | `/healthz` のみ bypass（`3d1f6243-3c52-4117-b945-f6541e7c8366`）。状態のみでデータなし |
+| `/healthz`（公開） | 200 / `{"status":"ok","env":"preview","db":{"ok":true}}` |
+| `/`（未認証） | 302 → `winter-lake-f4c9.cloudflareaccess.com` のログイン |
+| 静的配信 | 200、CSP / X-Frame-Options / nosniff 付与 |
+| API（カタログ） | 工種10件 / 辞書40件 / 案件 `SAMPLE-KANPEKI` |
+| F1 実操作（画面） | **未実施**（WebUI未実装） |
+| 保存→再読込 | APIレベルで成功（`VERIFY-CORE-01`、66要素・10工程・20割当・10標高） |
+| スクリーンショット | **未取得**（Accessログインが必要） |
 
-実施時に、URL・SHA・確認日時・データ（架空）・実API/Mockの区別を記録する。
+### 注意
+
+- 公開URLは Cloudflare Access で保護されている。`/healthz` のみ bypass。
+- 画面の実操作確認は、UI実装後に Access へログインして行う。
+- プレースホルダUIのため、現時点の画面確認は「配信経路とDB接続」の確認に限る。
 
 ## 5. 復旧・ロールバック
 

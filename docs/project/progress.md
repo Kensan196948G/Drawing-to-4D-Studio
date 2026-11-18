@@ -14,7 +14,7 @@
 | 設計 | OpenDesign 登録済み、lint 0/0/0。**承認待ち** |
 | WebUI | 未着手（承認後） |
 | CI | テンプレート `deploy/ci/ci.yml`。`.github/workflows/**` はポリシー拒否のため人間適用待ち |
-| Preview | 未配備 |
+| Preview | **基盤配備済み**（`https://d4d.mirai-dx-platform.com`、Access保護、UIはプレースホルダ） |
 
 ## 2. 完了した作業
 
@@ -59,6 +59,8 @@
 | `vite build` / `--mode standalone` | 成功 | 2026-11-18 09:08 |
 | `od lint`（設計） | P0 0 / P1 0 / P2 0 | 2026-11-18 09:03 |
 | `od artifacts create` | version 1, digest d3883990… | 2026-11-18 09:04 |
+| `tsx scripts/verify-mvp.ts` | **29/29 PASS**（API保存→再取得を含む） | 2026-11-18 09:19 |
+| Preview `/healthz` | 200 / db.ok=true / Access 302 | 2026-11-18 09:17 |
 
 ## 4. 課題Round
 
@@ -71,15 +73,16 @@
 | 標高制約違反でSeed失敗 | 1 | 3D対象外の0/0をCHECKが拒否 | `NOT enabled OR top > bottom` に変更 | 解決 |
 | ESLintがTS7非対応 | 1 | typescript-eslint 8.73 がTS7を拒否 | TypeScript 6.0.3 へ | 解決 |
 | CIワークフロー書込み拒否 | 1 | self-evolution policy gate（DEPLOY=critical） | 回避せず `deploy/ci/ci.yml` にテンプレート化 | **ブロッカー（人間適用待ち）** |
+| DNS CNAMEが別トンネル（onegate）を指した | 1 | `cloudflared tunnel route dns` が名前解決で既存トンネルを選択 | `--overwrite-dns` ＋ トンネルID明示で再設定 | 解決（5cf82d33へ） |
 
 ## 5. 次の一手
 
 1. WebUI設計 v1.0 の承認を得る（選択肢1〜3）。
 2. 承認後: SCR-01〜05 / DLG-01/02 を実装（`src/web/**`）。
 3. E2E（F1〜F3、状態、キーボード）を追加し、`pnpm test:e2e` を成功させる。
-4. GitHub リポジトリ作成、ブランチ `auto/phase1-mvp`、PR 作成。
+4. ~~GitHub リポジトリ作成、ブランチ `auto/phase1-mvp`、PR 作成。~~ 完了（draft PR #1）
 5. `.github/workflows/ci.yml` の適用を依頼（人間）。CI 緑を確認。
-6. Preview 配備（Tunnel / systemd / Access / DB）と実操作。
+6. ~~Preview 基盤配備（Tunnel / systemd / Access / DB）~~ 完了。UI実装後に再ビルド・再起動し、画面で F1 を実操作。
 7. 最終報告と引継ぎ。
 
 ## 5-1. PR

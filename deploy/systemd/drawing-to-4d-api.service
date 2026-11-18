@@ -1,0 +1,22 @@
+[Unit]
+Description=Drawing-to-4D Studio Preview API (127.0.0.1:8792)
+Documentation=file:///home/kensan/d4d-studio/docs/deployment.md
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/kensan/d4d-studio
+Environment=APP_ENV=preview
+Environment=HOST=127.0.0.1
+Environment=PORT=8792
+Environment=DATABASE_URL=postgresql:///d4d_studio_preview?host=/var/run/postgresql
+Environment=STATIC_ROOT=/home/kensan/d4d-studio/dist/web
+ExecStart=/home/kensan/.nvm/versions/node/v22.22.3/bin/node /home/kensan/d4d-studio/node_modules/tsx/dist/cli.mjs src/api/server.ts
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+KillMode=mixed
+
+[Install]
+WantedBy=default.target

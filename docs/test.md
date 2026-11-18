@@ -18,6 +18,10 @@
 | Secret scan | `node scripts/secret-scan.mjs` | 成功（58ファイル、検出0） | exit 0 |
 | Build（Web） | `vite build` | 成功 | `dist/web/` |
 | Build（Standalone） | `vite build --mode standalone` | 成功（単一HTML） | `dist/standalone/index.html` |
+| MVP中核検証 | `tsx scripts/verify-mvp.ts` | **29/29 PASS**（DXF→推定→標高→3D→4D→API保存/再取得） | `docs/evidence/core-verification.json` |
+| Preview 検証 | `node scripts/verify-preview.mjs` | **7/7 PASS**（公開/ローカル healthz、Access 302、カタログ、案件、CSP） | `docs/evidence/preview-verification.json` |
+| Preview `/healthz` | `curl https://d4d.mirai-dx-platform.com/healthz` | 200 / db.ok=true | 2026-11-18 09:17 |
+| Preview 保護 | `curl -o /dev/null -w '%{http_code}' https://d4d.mirai-dx-platform.com/` | 302（Accessログイン） | 2026-11-18 09:17 |
 | E2E | `playwright test` | **未実施**（WebUI実装前） | — |
 
 ## 2. 単体テストの内容

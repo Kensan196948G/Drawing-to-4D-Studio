@@ -41,3 +41,5 @@
 | 日時 | 種別 | 内容 | 結果 |
 | --- | --- | --- | --- |
 | 2026-11-18 | 設計提示 | WebUI設計 v1.0 を提示 | 回答待ち |
+| 2026-11-18 | 運用（承認不要） | Preview の Cloudflare Access アプリを作成（OTP、許可: kensan1969@gmail.com / mirai-const.co.jp）。`/healthz` のみ bypass | 実施済み（84df45bf… / 3d1f6243…） |
+| 2026-11-18 | 運用（承認不要） | Preview DB `d4d_studio_preview` を作成し migration/seed/verify | 実施済み（架空データのみ） |

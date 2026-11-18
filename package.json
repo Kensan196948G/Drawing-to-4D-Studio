@@ -28,7 +28,9 @@
     "db:reset": "tsx scripts/db.ts reset --yes",
     "secret-scan": "node scripts/secret-scan.mjs",
     "verify:all": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run build && pnpm run secret-scan",
-    "e2e:server": "tsx scripts/e2e-server.ts"
+    "e2e:server": "tsx scripts/e2e-server.ts",
+    "verify:mvp": "tsx scripts/verify-mvp.ts",
+    "verify:preview": "node scripts/verify-preview.mjs"
   },
   "dependencies": {
     "@fastify/static": "^10.1.11",

@@ -1,0 +1,48 @@
+{
+  "generatedAt": "2026-11-18T00:18:39.932Z",
+  "generator": "scripts/verify-preview.mjs",
+  "publicBase": "https://d4d.mirai-dx-platform.com",
+  "localBase": "http://127.0.0.1:8792",
+  "summary": {
+    "checks": 7,
+    "passed": 7,
+    "ok": true
+  },
+  "checks": [
+    {
+      "name": "local /healthz 200 + db.ok",
+      "ok": true,
+      "detail": "status=200 db.ok=true"
+    },
+    {
+      "name": "public /healthz 200 + db.ok",
+      "ok": true,
+      "detail": "status=200 db.ok=true"
+    },
+    {
+      "name": "public / redirects to Cloudflare Access",
+      "ok": true,
+      "detail": "status=302 location=https://winter-lake-f4c9.cloudflareaccess.com/cdn-cgi/access…"
+    },
+    {
+      "name": "catalog work-types = 10",
+      "ok": true,
+      "detail": "10"
+    },
+    {
+      "name": "catalog dictionary >= 40",
+      "ok": true,
+      "detail": "40"
+    },
+    {
+      "name": "cases include SAMPLE-KANPEKI",
+      "ok": true,
+      "detail": "VERIFY-CORE-01,SAMPLE-KANPEKI"
+    },
+    {
+      "name": "origin security headers",
+      "ok": true,
+      "detail": "status=200 csp=yes"
+    }
+  ]
+}

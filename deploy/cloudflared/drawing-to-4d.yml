@@ -1,0 +1,8 @@
+# Cloudflare Tunnel 設定（Preview）
+# 認証情報ファイルは ~/.cloudflared/<tunnel-id>.json（0600）にあり、リポジトリには置かない。
+tunnel: 5cf82d33-4615-49c9-a4ba-a031310e4760
+credentials-file: /home/kensan/.cloudflared/5cf82d33-4615-49c9-a4ba-a031310e4760.json
+ingress:
+  - hostname: d4d.mirai-dx-platform.com
+    service: http://127.0.0.1:8792
+  - service: http_status:404

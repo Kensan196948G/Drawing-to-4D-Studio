@@ -12,11 +12,11 @@
 
 | 領域 | 状態 |
 | --- | --- |
-| 中核エンジン（DXF/CSV/工種推定/標高/3D/4D） | 実装済み・単体テスト37件成功 |
+| 中核エンジン（DXF/CSV/工種推定/標高/3D/4D） | 実装済み・単体テスト37件成功・MVP中核検証29/29 PASS |
 | API・PostgreSQL（Migration/Seed/案件・辞書） | 実装済み・結合テスト10件成功 |
 | WebUI（5ステップ＋2ダイアログ） | **設計承認待ち**（現在はプレースホルダのみ） |
 | Standalone HTML | ビルド経路は動作（UI実装後に完成） |
-| Cloudflare Preview | 未配備 |
+| Cloudflare Preview | **基盤配備済み**（`https://d4d.mirai-dx-platform.com`、Access保護、UIはプレースホルダ） |
 | CI | `deploy/ci/ci.yml` にテンプレートを用意。この環境のポリシーが `.github/workflows/**` への書込みを拒否するため人間適用が必要 |
 
 ## 主要フロー
@@ -86,6 +86,8 @@ pnpm test              # 単体
 pnpm test:integration  # 結合（d4d_studio_test）
 pnpm test:e2e          # Playwright（UI実装後）
 pnpm secret-scan
+pnpm verify:mvp        # DXF→工種→標高→3D→4D→API保存/再取得（API起動中）
+pnpm verify:preview    # Preview の healthz / Access / カタログ / CSP を確認
 pnpm verify:all        # typecheck + lint + unit + build + secret-scan
 ```
 
@@ -106,7 +108,9 @@ pnpm verify:all        # typecheck + lint + unit + build + secret-scan
 
 ## Preview
 
-Cloudflare Tunnel 経由でローカルAPIを公開する計画です（本番環境は対象外）。
+`https://d4d.mirai-dx-platform.com`（Cloudflare Access のワンタイムパスワードで保護）。
+現在は配信経路とDB接続を確認するためのプレースホルダUIです。WebUI実装後に再ビルド・再起動して
+主要フローを実操作します。`/healthz` のみ Access bypass で 200 を返します。
 詳細と復旧手順は [`docs/deployment.md`](docs/deployment.md)。
 
 ## 既知の制限

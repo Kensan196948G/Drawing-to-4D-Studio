@@ -55,7 +55,7 @@
 
 | 検証 | 結果 | 証拠 |
 | --- | --- | --- |
-| Secret scan | 検出0（76ファイル） | `pnpm secret-scan` |
+| Secret scan | 検出0（100ファイル） | `pnpm secret-scan` |
 | 依存監査 | 既知脆弱性なし | `pnpm audit --prod --audit-level=high` |
 | ライセンス | コピーレフトなし | `pnpm licenses list --prod` |
 | Access保護 | 未認証 `/` は302→Accessログイン | `docs/evidence/preview-verification.json` |

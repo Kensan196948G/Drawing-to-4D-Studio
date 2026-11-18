@@ -147,8 +147,8 @@ jobs:
       - name: Reinstall (build scripts approved)
         run: pnpm install --frozen-lockfile
 
-      - name: Build web
-        run: pnpm run build:web
+      - name: Build web + standalone
+        run: pnpm run build
 
       - name: Install Playwright Chromium
         run: pnpm exec playwright install --with-deps chromium

@@ -26,7 +26,7 @@
 | Preview 保護 | `curl -o /dev/null -w '%{http_code}' https://d4d.mirai-dx-platform.com/` | 302（Accessログイン） | 2026-11-18 09:17 |
 | Preview 再起動 | `pnpm deploy:preview` | ビルド→再起動→healthz 200 / preview checks 7/7 | 2026-11-18 09:21 |
 | DB 復元 | `bash scripts/restore-drill.sh` | **PASS**（cases=2 / work_types=10 / elevations=20） | `docs/evidence/restore-drill.json` |
-| E2E | `pnpm test:e2e` | **7件成功**（F1/F2/F3・Empty・キーボード・smoke・screenshots） | `tests/e2e/*.spec.ts` |
+| E2E | `pnpm test:e2e` | **8件成功**（F1/F2/F3・Empty・キーボード・smoke・screenshots・Standaloneオフライン） | `tests/e2e/*.spec.ts` |
 
 ## 2. 単体テストの内容
 
@@ -56,7 +56,7 @@
 
 ## 4. E2E
 
-WebUI実装後の E2E は **7件成功**（2026-11-18 09:5x JST）。
+WebUI実装後の E2E は **8件成功**（2026-11-18 09:57 JST）。
 
 | テスト | 内容 | 結果 |
 | --- | --- | --- |
@@ -67,6 +67,7 @@ WebUI実装後の E2E は **7件成功**（2026-11-18 09:5x JST）。
 | Keyboard | スキップリンクのフォーカスと遷移 | 成功 |
 | Smoke ×3 | healthz / サンプル案件API / app shell + CSP | 成功 |
 | Screenshots | 主要5画面と保存ダイアログの撮影 | 成功 |
+| Standalone | `file://` で単一HTMLを開き、APIなしでF1完了（29部材） | 成功 |
 
 実行方法:
 

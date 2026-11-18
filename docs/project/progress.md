@@ -65,7 +65,7 @@
 | `pnpm licenses list --prod` | 84件、コピーレフトなし | 2026-11-18 09:19 |
 | `bash scripts/restore-drill.sh` | PASS（cases=2 / work_types=10 / elevations=20） | 2026-11-18 09:20 |
 | `pnpm deploy:preview` | ビルド→再起動→7/7 PASS | 2026-11-18 09:21 |
-| `pnpm test:e2e` | **7 passed**（F1/F2/F3/Empty/Keyboard/Smoke/Screenshots） | 2026-11-18 09:52 |
+| `pnpm test:e2e` | **8 passed**（F1/F2/F3/Empty/Keyboard/Smoke/Screenshots/Standaloneオフライン） | 2026-11-18 09:57 |
 | 画面証拠 | `docs/evidence/screens/01〜06.png` | 2026-11-18 09:53 |
 | Preview UI配備 | `pnpm deploy:preview` → 7/7 PASS、originが新UIを配信 | 2026-11-18 09:53 |
 
@@ -104,7 +104,7 @@
 ## 5-2. WebUI実装（2026-11-18 09:35–09:53）
 
 - SCR-01〜05＋DLG-01/02 を実装（`src/web/**`）
-- E2E 7件（F1/F2/F3/Empty/Keyboard/Smoke/Screenshots）成功
+- E2E 8件（F1/F2/F3/Empty/Keyboard/Smoke/Screenshots/Standaloneオフライン）成功
 - 画面証拠 `docs/evidence/screens/01〜06.png`
 - Standalone 単一HTML（約716KB）
 - Preview にUIを配備（originで新UIを配信、publicはAccess 302）

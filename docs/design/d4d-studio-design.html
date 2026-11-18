@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drawing-to-4D Studio — WebUI 設計仕様 v1.0（承認待ち）</title>
+<style>
+  :root {
+    --bg:#eef2f6; --paper:#ffffff; --paper2:#f7f9fb; --ink:#10293f; --sub:#46607a; --mute:#7a8da0;
+    --line:#d9e1e8; --line2:#c0ccd8;
+    --acc:#d9540a; --acc-bg:#fdeee4; --navy:#1c5d86; --navy-bg:#e3eef6;
+    --green:#15835a; --green-bg:#e2f4eb; --red:#c23a2e; --red-bg:#fbe8e6;
+    --vio:#6a4fc8; --vio-bg:#efebfb; --amber:#b7791f; --amber-bg:#fdf3e1; --sea:#2b86a8;
+    --view-top:#d6e6f0; --view-bot:#f3f7fa;
+    --shadow:0 1px 2px rgba(16,41,63,.06), 0 6px 18px rgba(16,41,63,.06);
+    --sans:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI","Yu Gothic","Meiryo",system-ui,sans-serif;
+    --mono:ui-monospace,"SF Mono",Consolas,"Roboto Mono",monospace;
+    --r-sm:8px; --r-md:12px; --r-pill:999px;
+    --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg:#0e141a; --paper:#161f28; --paper2:#1b2631; --ink:#e6edf3; --sub:#b0bfcd; --mute:#8697a8;
+      --line:#27333e; --line2:#3a4856;
+      --acc:#ff8a3d; --acc-bg:#3a2414; --navy:#6fb1e0; --navy-bg:#13283a;
+      --green:#4fcf97; --green-bg:#11302a; --red:#ff7b6e; --red-bg:#3a1a18;
+      --vio:#a891ff; --vio-bg:#241d3d; --amber:#f0b44c; --amber-bg:#33280f; --sea:#5bb6d8;
+      --view-top:#1a2b3a; --view-bot:#101820; --shadow:none; color-scheme:dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:var(--sans); font-size:14px; line-height:1.75;
+    font-variant-numeric: tabular-nums;
+  }
+  a { color:var(--navy); }
+  .wrap { max-width:1180px; margin:0 auto; padding:var(--s6) var(--s5) 80px; }
+  header.hero {
+    background:linear-gradient(180deg,var(--paper) 0%,var(--paper2) 100%);
+    border:1px solid var(--line); border-radius:var(--r-md); box-shadow:var(--shadow);
+    padding:var(--s6); margin-bottom:var(--s5);
+  }
+  .kicker { font-family:var(--mono); font-size:12px; letter-spacing:.12em; color:var(--acc); text-transform:uppercase; }
+  h1 { font-size:26px; line-height:1.35; margin:var(--s2) 0 var(--s2); }
+  h2 { font-size:19px; margin:var(--s6) 0 var(--s3); padding-bottom:var(--s2); border-bottom:1px solid var(--line); }
+  h3 { font-size:15px; margin:var(--s5) 0 var(--s2); }
+  h4 { font-size:13px; margin:var(--s4) 0 var(--s1); color:var(--sub); }
+  p { margin:var(--s2) 0; }
+  .lede { font-size:15px; color:var(--sub); max-width:76ch; }
+  .meta { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:var(--s3); margin-top:var(--s4); }
+  .meta div { background:var(--paper); border:1px solid var(--line); border-radius:var(--r-sm); padding:var(--s3); }
+  .meta dt { font-size:11px; color:var(--mute); letter-spacing:.04em; }
+  .meta dd { margin:0; font-weight:600; font-size:13px; }
+  nav.toc { background:var(--paper); border:1px solid var(--line); border-radius:var(--r-md); padding:var(--s4) var(--s5); margin-bottom:var(--s5); }
+  nav.toc ol { margin:0; padding-left:1.4em; columns:2; column-gap:var(--s5); }
+  nav.toc li { break-inside:avoid; margin:2px 0; font-size:13px; }
+  section { background:var(--paper); border:1px solid var(--line); border-radius:var(--r-md); padding:var(--s5); margin-bottom:var(--s4); box-shadow:var(--shadow); }
+  table { width:100%; border-collapse:collapse; margin:var(--s3) 0; font-size:13px; }
+  th, td { border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top; }
+  th { background:var(--paper2); font-weight:600; color:var(--sub); font-size:12px; white-space:nowrap; }
+  td.num { font-family:var(--mono); white-space:nowrap; }
+  .pill { display:inline-flex; align-items:center; gap:4px; border-radius:var(--r-pill); padding:1px 8px; font-size:11px; font-weight:600; border:1px solid transparent; white-space:nowrap; }
+  .pill.ok { background:var(--green-bg); color:var(--green); }
+  .pill.warn { background:var(--amber-bg); color:var(--amber); }
+  .pill.err { background:var(--red-bg); color:var(--red); }
+  .pill.info { background:var(--navy-bg); color:var(--navy); }
+  .pill.human { background:var(--vio-bg); color:var(--vio); }
+  .pill.mute { background:var(--paper2); color:var(--mute); border-color:var(--line); }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:var(--s4); }
+  .grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:var(--s3); }
+  @media (max-width:820px) { .grid2,.grid3 { grid-template-columns:1fr; } nav.toc ol { columns:1; } }
+  .card { background:var(--paper2); border:1px solid var(--line); border-radius:var(--r-sm); padding:var(--s3); }
+  .muted { color:var(--mute); }
+  code, .mono { font-family:var(--mono); font-size:12.5px; background:var(--paper2); border:1px solid var(--line); border-radius:4px; padding:0 4px; }
+  pre { font-family:var(--mono); font-size:12.5px; background:var(--paper2); border:1px solid var(--line); border-radius:var(--r-sm); padding:var(--s3); overflow:auto; line-height:1.6; }
+  .flow { display:flex; flex-wrap:wrap; gap:var(--s2); align-items:center; margin:var(--s3) 0; }
+  .flow span { background:var(--paper2); border:1px solid var(--line); border-radius:var(--r-pill); padding:3px 10px; font-size:12px; }
+  .flow span.act { background:var(--acc-bg); border-color:var(--acc); color:var(--acc); font-weight:600; }
+  .flow span.human { background:var(--vio-bg); border-color:var(--vio); color:var(--vio); font-weight:600; }
+  .mock { border:1px solid var(--line2); border-radius:var(--r-md); overflow:hidden; background:var(--bg); margin:var(--s3) 0; }
+  .mock-top { display:flex; align-items:center; gap:var(--s3); background:var(--paper); border-bottom:1px solid var(--line); padding:10px var(--s3); }
+  .mock-logo { width:26px; height:26px; border-radius:7px; background:var(--navy); flex:none; }
+  .mock-title { font-weight:700; font-size:13px; }
+  .mock-title small { display:block; font-weight:400; color:var(--mute); font-size:10px; }
+  .mock-body { display:grid; grid-template-columns:190px 1fr; min-height:250px; }
+  .mock-nav { background:var(--paper); border-right:1px solid var(--line); padding:var(--s3); }
+  .mock-nav b { display:block; font-size:10px; color:var(--mute); margin-bottom:6px; letter-spacing:.06em; }
+  .mock-step { display:flex; gap:6px; align-items:center; font-size:11.5px; padding:5px 6px; border-radius:5px; margin-bottom:2px; }
+  .mock-step.on { background:var(--navy-bg); color:var(--navy); font-weight:700; }
+  .mock-step i { width:16px; height:16px; border-radius:50%; border:1px solid var(--line2); font-style:normal; font-size:9px; display:grid; place-items:center; flex:none; }
+  .mock-step.done i { background:var(--green); border-color:var(--green); color:#fff; }
+  .mock-main { padding:var(--s4); background:var(--bg); }
+  .mock-h { font-size:14px; font-weight:700; margin:0 0 2px; }
+  .mock-p { font-size:11px; color:var(--mute); margin:0 0 var(--s3); }
+  .mock-card { background:var(--paper); border:1px solid var(--line); border-radius:8px; padding:var(--s3); }
+  .mock-row { display:flex; gap:var(--s2); align-items:center; padding:6px 0; border-bottom:1px solid var(--line); font-size:11px; }
+  .mock-row:last-child { border-bottom:0; }
+  .mock-bar { height:6px; border-radius:3px; background:var(--navy); }
+  .mock-kpis { display:flex; gap:var(--s2); margin-left:auto; }
+  .mock-kpi { text-align:right; font-size:9px; color:var(--mute); }
+  .mock-kpi b { display:block; font-family:var(--mono); font-size:13px; color:var(--ink); }
+  .callout { border-left:3px solid var(--navy); background:var(--navy-bg); padding:var(--s2) var(--s3); border-radius:0 var(--r-sm) var(--r-sm) 0; font-size:13px; margin:var(--s3) 0; }
+  .callout.human { border-color:var(--vio); background:var(--vio-bg); }
+  .callout.warn { border-color:var(--amber); background:var(--amber-bg); }
+  ul.check { list-style:none; padding-left:0; }
+  ul.check li { padding-left:24px; position:relative; margin:4px 0; font-size:13px; }
+  ul.check li::before { content:"✓"; position:absolute; left:4px; color:var(--green); font-weight:700; }
+  ul.tight li { margin:2px 0; }
+  .tokens { display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:var(--s2); }
+  .token { border:1px solid var(--line); border-radius:var(--r-sm); overflow:hidden; background:var(--paper); }
+  .token .sw { height:34px; }
+  .token .lb { padding:5px 7px; font-size:10.5px; }
+  .token .lb b { display:block; font-size:10.5px; }
+  .token .lb code { border:0; background:transparent; padding:0; font-size:10px; color:var(--mute); }
+  .approval { border:2px solid var(--vio); }
+  .approval h2 { border-color:var(--vio); }
+  footer { text-align:center; color:var(--mute); font-size:11.5px; margin-top:var(--s5); }
+  @media print {
+    body { background:#fff; font-size:10.5pt; }
+    section, header.hero, nav.toc { box-shadow:none; break-inside:avoid; }
+    nav.toc { break-after:page; }
+    a { color:inherit; text-decoration:none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker">Design Specification · V1.0 · Approval pending</div>
+  <h1>Drawing-to-4D Studio<br>WebUI 設計仕様（第1段階 / Phase 1 MVP）</h1>
+  <p class="lede">
+    2D施工計画図（DXF）と工程表（CSV）から、工種の確認・標高の付与を経て4D表示までを、
+    ブラウザだけで完結させる半自動ツールの画面設計です。図面は外部に送らず、
+    担当者の確認を中心に据えます。
+  </p>
+  <dl class="meta">
+    <div><dt>版 / 日付</dt><dd>v1.0 / 2026-11-18</dd></div>
+    <div><dt>対象</dt><dd>Phase 1（Standalone + 検証環境）</dd></div>
+    <div><dt>設計基盤</dt><dd>OpenDesign 0.21.1（tech-utility + human-approachable）</dd></div>
+    <div><dt>画面数</dt><dd>5ステップ + 2ダイアログ</dd></div>
+    <div><dt>利用者</dt><dd>施工計画担当 1名（PCブラウザ）</dd></div>
+    <div><dt>状態</dt><dd><span class="pill human">承認待ち</span></dd></div>
+  </dl>
+</header>
+
+<nav class="toc" aria-label="目次">
+  <ol>
+    <li><a href="#purpose">目的・利用者・解決課題</a></li>
+    <li><a href="#flows">主要フロー（1〜3）</a></li>
+    <li><a href="#screens">画面一覧と情報設計</a></li>
+    <li><a href="#layout">レイアウトとナビゲーション</a></li>
+    <li><a href="#tokens">デザイントークン</a></li>
+    <li><a href="#scr01">SCR-01 取り込み</a></li>
+    <li><a href="#scr02">SCR-02 工種の割り当て</a></li>
+    <li><a href="#scr03">SCR-03 高さの付与</a></li>
+    <li><a href="#scr04">SCR-04 3D生成</a></li>
+    <li><a href="#scr05">SCR-05 4D表示</a></li>
+    <li><a href="#dialogs">DLG-01/02 保存・開く／確認</a></li>
+    <li><a href="#states">状態設計（Loading/Empty/Error/Success）</a></li>
+    <li><a href="#data">データ契約（画面・API・DB）</a></li>
+    <li><a href="#a11y">レスポンシブ・アクセシビリティ</a></li>
+    <li><a href="#errors">エラーコード</a></li>
+    <li><a href="#acceptance">受入条件</a></li>
+    <li><a href="#out">対象外・将来</a></li>
+    <li><a href="#opendesign">OpenDesign 利用記録</a></li>
+    <li><a href="#approval">承認</a></li>
+  </ol>
+</nav>
+
+<section id="purpose" data-od-id="purpose">
+  <h2>1. 目的・利用者・解決課題</h2>
+  <div class="grid2">
+    <div>
+      <h3>目的</h3>
+      <p>手元の2D施工計画図と工程表から、施工順序が伝わる4Dを短時間で作り、発注者協議・社内説明・地元説明に使えるようにする。</p>
+      <h3>利用者</h3>
+      <p>施工計画担当者1名。CADの操作には慣れているが、Navisworks等の4D専用ソフトは日常的に使わない。PCブラウザ（1280×800以上）で利用する。</p>
+      <h3>解決課題</h3>
+      <ul class="tight">
+        <li>2D図面と工程表を頭の中で重ねる負担を減らす。</li>
+        <li>専用ソフトの3Dモデリングと工程紐付けの手間を省く。</li>
+        <li>工程変更を4Dへすぐ反映できるようにする。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>この設計が守ること</h4>
+      <ul class="tight">
+        <li><b>完全オフライン</b>: 図面はブラウザ内だけで処理し、外部送信しない。</li>
+        <li><b>半自動</b>: 推定は下書き。確定は必ず担当者が行う。</li>
+        <li><b>概略でよい</b>: 説明と合意形成のための4D。数量・干渉確認には使わない。</li>
+        <li><b>1画面1判断</b>: 取り込み → 工種 → 高さ → 3D → 4D の順に迷わない。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="flows" data-od-id="flows">
+  <h2>2. 主要フロー（1〜3）</h2>
+
+  <h3>F1 取り込みから4D再生まで（中核）</h3>
+  <div class="flow" aria-label="F1の流れ">
+    <span class="act">DXF + CSV 取り込み</span><span>→</span>
+    <span class="human">工種の確認・修正</span><span>→</span>
+    <span class="human">標高の確認・修正</span><span>→</span>
+    <span>3D生成</span><span>→</span>
+    <span class="act">4D再生・日付移動・視点変更</span>
+  </div>
+  <table>
+    <thead><tr><th>項目</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>開始条件</td><td>DXF（平面図・断面図）と工程表CSVが手元にある。サンプルでも可。</td></tr>
+      <tr><td>操作</td><td>2ファイルを置く → 工種候補を確認 → 標高を確認 → 3D生成 → 再生。</td></tr>
+      <tr><td>期待結果</td><td>工程表の日付に応じて部材が順に現れ、視点を変えられる。</td></tr>
+      <tr><td>保存データ</td><td>図面（要素）・工程表・工種割当・標高・辞書（ブラウザ保存）。</td></tr>
+      <tr><td>エラー時</td><td>解析不能な要素は除外し、理由を警告として残す。図面全体の失敗は再取込を促す。</td></tr>
+      <tr><td>受入</td><td>サンプルで 8工種・29部材が生成され、2027/04〜2028/03 の範囲で再生できる。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>F2 保存と再開（辞書の学習を含む）</h3>
+  <div class="flow"><span class="act">保存</span><span>→</span><span>（別セッション）</span><span class="act">開く</span><span>→</span><span>同じ4Dを再現</span></div>
+  <table>
+    <thead><tr><th>項目</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>開始条件</td><td>F1を一度完了している。</td></tr>
+      <tr><td>操作</td><td>ヘッダ「保存」→ 案件名を確認 → 保存。次回「開く」で一覧から選択。</td></tr>
+      <tr><td>期待結果</td><td>工種・標高・工程・辞書が復元され、同じ4Dが再生できる。</td></tr>
+      <tr><td>保存先</td><td>ブラウザ（localStorage）。API接続時はローカルPostgreSQLにも保存できる（任意）。</td></tr>
+      <tr><td>エラー時</td><td>容量超過は ERR-107。API失敗は ERR-111 とし、ブラウザ保存は継続する。</td></tr>
+      <tr><td>受入</td><td>保存→再読込で部材数・工種・標高が一致する。</td></tr>
+    </tbody>
+  </table>
+
+  <h3>F3 辞書の改善（同じ書き方の図面を次から自動化）</h3>
+  <div class="flow"><span class="human">手動で工種を修正</span><span>→</span><span>「このレイヤ名を辞書に登録」</span><span>→</span><span>次回の図面で自動割当</span></div>
+  <p>修正結果は辞書（exact一致・優先度200）へ追加し、同じレイヤ名の図面では信頼度100%で自動割当します。辞書は保存データに含め、API接続時はローカルDBの辞書へ同期できます。</p>
+</section>
+
+<section id="screens" data-od-id="screens">
+  <h2>3. 画面一覧と情報設計</h2>
+  <table>
+    <thead><tr><th>ID</th><th>画面</th><th>目的</th><th>主な操作</th><th>次へ進む条件</th></tr></thead>
+    <tbody>
+      <tr><td class="num">SCR-01</td><td>取り込み</td><td>図面と工程表を読み込み、構造を把握する</td><td>ドラッグ＆ドロップ／ファイル選択／サンプル／プレビュー拡大</td><td>DXFと工程表が読み込まれている</td></tr>
+      <tr><td class="num">SCR-02</td><td>工種の割り当て</td><td>レイヤごとの工種を確定する</td><td>候補選択／確定／除外／一括確定／辞書登録</td><td>3D対象レイヤがすべて確定または除外</td></tr>
+      <tr><td class="num">SCR-03</td><td>高さの付与</td><td>天端・底面の標高を確定する</td><td>数値入力／注記の反映／進行方向の選択</td><td>有効な工種に標高エラーがない</td></tr>
+      <tr><td class="num">SCR-04</td><td>3D生成</td><td>部材を生成し、警告を確認する</td><td>生成／警告の確認／3Dプレビュー</td><td>部材が1件以上生成されている</td></tr>
+      <tr><td class="num">SCR-05</td><td>4D表示</td><td>工程に沿って施工を再生する</td><td>再生／日付移動／視点／部材強調／保存</td><td>—（終点）</td></tr>
+      <tr><td class="num">DLG-01</td><td>保存・開く</td><td>案件の保存と復元</td><td>案件名入力／一覧選択／削除</td><td>—</td></tr>
+      <tr><td class="num">DLG-02</td><td>確認</td><td>上書き・削除・未確定のまま進む確認</td><td>続行／戻る</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    左ナビのステップは「戻る」自由、「進む」は条件を満たすときだけ有効にします。
+    条件を満たさない場合は理由をステップ名の下に表示し、押せるのに失敗する状態を作りません。
+  </div>
+</section>
+
+<section id="layout" data-od-id="layout">
+  <h2>4. レイアウトとナビゲーション</h2>
+  <div class="mock" role="img" aria-label="全体レイアウトの模式図">
+    <div class="mock-top">
+      <span class="mock-logo"></span>
+      <span class="mock-title">Drawing-to-4D Studio<small>2D施工計画図 4D化</small></span>
+      <span class="pill ok">完全オフライン・図面は外に出ません</span>
+      <span class="mock-kpis">
+        <span class="mock-kpi">図面要素<b>47</b></span>
+        <span class="mock-kpi">工種<b>8</b></span>
+        <span class="mock-kpi">3D部材<b>29</b></span>
+        <span class="mock-kpi">工程<b>10</b></span>
+        <span class="mock-kpi">確認待ち<b>3</b></span>
+      </span>
+    </div>
+    <div class="mock-body">
+      <div class="mock-nav">
+        <b>作業のステップ</b>
+        <div class="mock-step done"><i>✓</i>1 取り込み</div>
+        <div class="mock-step on"><i>2</i>2 工種の割り当て</div>
+        <div class="mock-step"><i>3</i>3 高さの付与</div>
+        <div class="mock-step"><i>4</i>4 3D生成</div>
+        <div class="mock-step"><i>5</i>5 4D表示</div>
+      </div>
+      <div class="mock-main">
+        <p class="mock-h">2 工種の割り当て</p>
+        <p class="mock-p">レイヤごとに工種を確定します。推定は下書きです。</p>
+        <div class="mock-card">
+          <div class="mock-row"><span class="pill info">レイヤ</span><b>CAISSON</b><span class="muted">5要素</span><span class="pill ok">93%</span><span class="pill human">確認</span></div>
+          <div class="mock-row"><span class="pill info">レイヤ</span><b>Layer3</b><span class="muted">1要素</span><span class="pill warn">65%</span><span class="pill human">確認</span></div>
+          <div class="mock-row"><span class="pill mute">除外</span><b>DIM</b><span class="muted">4要素</span><span class="pill mute">寸法</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div>
+      <h3>骨格</h3>
+      <ul class="tight">
+        <li>上部バー（56px）: ロゴ、オフラインバッジ、KPI、保存・開く・テーマ。</li>
+        <li>左ナビ（212px）: 5ステップ、各ステップの状態、範囲の注記。</li>
+        <li>作業領域: 最大幅 1080px。カード単位で「読む→決める→次へ」。</li>
+        <li>下部: ステップ内の主操作（戻る／次へ）を右寄せ。</li>
+      </ul>
+    </div>
+    <div>
+      <h3>ナビゲーション規則</h3>
+      <ul class="tight">
+        <li>現在ステップは番号を塗り、完了は緑のチェック、要確認は橙の点。</li>
+        <li>進む条件を満たさないステップは <code>aria-disabled="true"</code> とし、理由を表示。</li>
+        <li>ファイル未取込で SCR-02 以降を開いた場合は Empty 状態を表示し、SCR-01 へ戻す。</li>
+        <li>ブラウザの戻る/進むはステップ移動に連動（URLハッシュ <code>#step-2</code>）。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="tokens" data-od-id="tokens">
+  <h2>5. デザイントークン</h2>
+  <p>Phase 0 PoC の図面紺・施工中オレンジ・担当者確認紫を継承し、OpenDesign の <b>tech-utility</b>（表の密度・等幅数値・ヘアライン）と <b>human-approachable</b>（12pxの角丸・余白）を加えています。</p>
+  <div class="tokens">
+    <div class="token"><div class="sw" style="background:#1c5d86"></div><div class="lb"><b>--navy</b><code>#1c5d86</code></div></div>
+    <div class="token"><div class="sw" style="background:#d9540a"></div><div class="lb"><b>--acc</b><code>#d9540a</code></div></div>
+    <div class="token"><div class="sw" style="background:#6a4fc8"></div><div class="lb"><b>--vio</b><code>#6a4fc8</code></div></div>
+    <div class="token"><div class="sw" style="background:#15835a"></div><div class="lb"><b>--green</b><code>#15835a</code></div></div>
+    <div class="token"><div class="sw" style="background:#b7791f"></div><div class="lb"><b>--amber</b><code>#b7791f</code></div></div>
+    <div class="token"><div class="sw" style="background:#c23a2e"></div><div class="lb"><b>--red</b><code>#c23a2e</code></div></div>
+    <div class="token"><div class="sw" style="background:#2b86a8"></div><div class="lb"><b>--sea</b><code>#2b86a8</code></div></div>
+    <div class="token"><div class="sw" style="background:#eef2f6"></div><div class="lb"><b>--bg</b><code>#eef2f6</code></div></div>
+    <div class="token"><div class="sw" style="background:#ffffff"></div><div class="lb"><b>--paper</b><code>#ffffff</code></div></div>
+    <div class="token"><div class="sw" style="background:#10293f"></div><div class="lb"><b>--ink</b><code>#10293f</code></div></div>
+    <div class="token"><div class="sw" style="background:#7a8da0"></div><div class="lb"><b>--mute</b><code>#7a8da0</code></div></div>
+    <div class="token"><div class="sw" style="background:#d9e1e8"></div><div class="lb"><b>--line</b><code>#d9e1e8</code></div></div>
+  </div>
+  <table>
+    <thead><tr><th>用途</th><th>トークン</th><th>値・規則</th></tr></thead>
+    <tbody>
+      <tr><td>本文</td><td><code>--sans</code> 14px / 1.75</td><td>Hiragino Sans → Noto Sans JP → Yu Gothic UI。見出し 20/16/14。</td></tr>
+      <tr><td>数値・ID</td><td><code>--mono</code></td><td>標高・日付・要素数・信頼度は <code>font-variant-numeric: tabular-nums</code>。</td></tr>
+      <tr><td>角丸</td><td>8 / 12 / 999</td><td>入力=8、カード=12、状態ピル=999。</td></tr>
+      <tr><td>余白</td><td>4 / 8 / 12 / 16 / 24 / 32</td><td>カード内 16、カード間 16、セクション間 24。</td></tr>
+      <tr><td>状態色</td><td>緑 / 橙 / 赤 / 紫 / 紺</td><td>成功 / 要確認 / エラー / 担当者確認 / 情報。色だけでなく文字ラベルを併記。</td></tr>
+      <tr><td>表</td><td>ヘアライン 1px</td><td>縞なし。ヘッダは <code>--paper2</code>。数値は右寄せ。</td></tr>
+      <tr><td>影</td><td><code>--shadow</code></td><td>カードのみ。ダークでは影なし。</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="scr01" data-od-id="scr01">
+  <h2>6. SCR-01 取り込み</h2>
+  <div class="grid2">
+    <div>
+      <h3>画面の構成</h3>
+      <ul class="tight">
+        <li><b>ドロップゾーン</b>: DXFと工程表CSVを同時に受け付ける。複数ファイル可。</li>
+        <li><b>サンプル</b>: 岸壁施工計画図（架空）と工程表を1クリックで読み込む。</li>
+        <li><b>対応形式表</b>: DXF=対応、CSV=対応、DWG=変換、SXF/PDF/Excel=第2段階。</li>
+        <li><b>読み込み結果</b>: 線・輪郭／円／文字／レイヤの件数、単位、範囲、警告。</li>
+        <li><b>図面プレビュー</b>: SVG。ドラッグで移動、ホイールで拡大、フィット。</li>
+      </ul>
+    </div>
+    <div>
+      <h3>操作とフィードバック</h3>
+      <ul class="tight">
+        <li>DXFドロップ → 進捗バー → 件数とプレビューを表示。</li>
+        <li>CSVドロップ → 工程表の行数・期間・不良行を表示。</li>
+        <li>DXFのみ／CSVのみでも次へ進めるが、SCR-02/03 で不足を明示する。</li>
+        <li>サンプル読込は「サンプル図面（架空）」バナーを出す。</li>
+      </ul>
+      <div class="callout">図面の内容はこのパソコンの中だけで処理します。サーバへは送信しません。</div>
+    </div>
+  </div>
+  <h4>状態</h4>
+  <table>
+    <thead><tr><th>状態</th><th>表示</th><th>次の操作</th></tr></thead>
+    <tbody>
+      <tr><td>Empty</td><td>ドロップゾーンと対応形式表のみ。KPI は 0。</td><td>ファイル選択 / サンプル</td></tr>
+      <tr><td>Loading</td><td>進捗バー（解析中）。ボタンは無効。</td><td>待機</td></tr>
+      <tr><td>Error</td><td>赤のインラインパネルに ERR-102 と理由。入力は保持。</td><td>再選択</td></tr>
+      <tr><td>Warning</td><td>橙のリスト（未対応要素、単位換算、閉じていない輪郭）。</td><td>確認して次へ</td></tr>
+      <tr><td>Success</td><td>件数サマリとプレビュー。緑のトースト「DXFを読み込みました」。</td><td>SCR-02 へ</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="scr02" data-od-id="scr02">
+  <h2>7. SCR-02 工種の割り当て</h2>
+  <p>レイヤ単位に「要素数・推定候補・確からしさ・確認状態」を1行で示します。推定は下書きであり、確定は担当者が行います。</p>
+  <table>
+    <thead><tr><th>列</th><th>内容</th><th>操作</th></tr></thead>
+    <tbody>
+      <tr><td>レイヤ</td><td>レイヤ名（mono）、要素数、文字注記の抜粋</td><td>クリックでプレビュー強調</td></tr>
+      <tr><td>工種</td><td>候補3件 + 「未割当」+「対象外」</td><td>セレクトで確定</td></tr>
+      <tr><td>確からしさ</td><td>0–100%。根拠（レイヤ名/コード/注記/形）をツールチップ</td><td>—</td></tr>
+      <tr><td>確認</td><td>チェックボックス</td><td>確定 / 未確定</td></tr>
+      <tr><td>辞書</td><td>手動修正時に「このレイヤ名を辞書に登録」</td><td>オン/オフ（既定オン）</td></tr>
+    </tbody>
+  </table>
+  <div class="grid2">
+    <div>
+      <h3>一括操作</h3>
+      <ul class="tight">
+        <li><b>信頼度80%以上を一括確定</b>: 未確定かつ推定候補ありの行だけ。</li>
+        <li><b>未確定のみ表示</b>: フィルタ。残件数をナビに表示。</li>
+        <li><b>対象外を除く</b>: DIM・法線・断面・文字レイヤは既定で除外。</li>
+      </ul>
+      <h3>進む条件</h3>
+      <p>3D対象レイヤがすべて「確定」または「対象外」になっていること。未確定が残る場合は DLG-02 で確認し、そのまま進むこともできる（未確定は3D化されない）。</p>
+    </div>
+    <div>
+      <h3>推定の根拠表示</h3>
+      <table>
+        <thead><tr><th>根拠</th><th>例</th><th>初期信頼度</th></tr></thead>
+        <tbody>
+          <tr><td>レイヤ名の工種コード</td><td>4D_050_上部工</td><td class="num">98%</td></tr>
+          <tr><td>レイヤ名のキーワード</td><td>CAISSON / MOUND</td><td class="num">88–96%</td></tr>
+          <tr><td>近傍の文字注記</td><td>Layer3 内の「裏込石」</td><td class="num">65–67%</td></tr>
+          <tr><td>同じ形の繰り返し</td><td>同形の四角が5つ</td><td class="num">50%</td></tr>
+          <tr><td>辞書（学習済み）</td><td>前回修正したレイヤ名</td><td class="num">100%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="callout human">紫は「人の確認が必要」を意味します。推定が高くても、確定操作なしに3D化しません。</div>
+</section>
+
+<section id="scr03" data-od-id="scr03">
+  <h2>8. SCR-03 高さの付与</h2>
+  <p>平面図には高さがありません。断面図の標高注記を候補として示し、工種ごとに天端・底面を確定します。</p>
+  <div class="grid2">
+    <div>
+      <h3>標高表</h3>
+      <table>
+        <thead><tr><th>列</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>対象</td><td>チェックボックス（準備工・片付けは既定オフ）</td></tr>
+          <tr><td>工種</td><td>コード + 名称</td></tr>
+          <tr><td>天端 / 底面</td><td>数値入力（m、0.01刻み、矢印キー可）</td></tr>
+          <tr><td>進行方向</td><td>延長方向 / 1つずつ / 下から積む / 即時</td></tr>
+          <tr><td>根拠</td><td>初期値 / 注記 / 手動</td></tr>
+        </tbody>
+      </table>
+      <p class="muted">サンプルでは断面図から10件の注記を抽出します（例: ケーソン 天端 +2.0、床掘底 -13.0）。</p>
+    </div>
+    <div>
+      <h3>注記パネル</h3>
+      <ul class="tight">
+        <li>抽出した注記を「ラベル / 値 / 対応工種 / 根拠」で一覧表示。</li>
+        <li>「すべて反映」で対応工種の天端・底面へ反映。</li>
+        <li>個別の「反映」も可能。反映後は根拠が「注記」に変わる。</li>
+        <li>対応工種が決められない注記は「未対応」とし、自動反映しない。</li>
+      </ul>
+      <div class="callout warn">天端 ≦ 底面、または高低差100m超はエラー。赤字で理由を出し、次へ進めません。</div>
+    </div>
+  </div>
+</section>
+
+<section id="scr04" data-od-id="scr04">
+  <h2>9. SCR-04 3D生成</h2>
+  <div class="grid2">
+    <div>
+      <h3>生成結果</h3>
+      <table>
+        <thead><tr><th>項目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>部材数</td><td>生成した部材の総数（例: 29）</td></tr>
+          <tr><td>工種別</td><td>工種ごとの部材数・面積合計（m²）</td></tr>
+          <tr><td>警告</td><td>閉じていない輪郭の自動補正、面積不足、工程と未対応</td></tr>
+          <tr><td>プレビュー</td><td>3Dビュー（回転・ズーム・フィット）</td></tr>
+        </tbody>
+      </table>
+      <h3>警告の扱い</h3>
+      <ul class="tight">
+        <li>自動補正は「確認してください」と表示し、警告を消さない。</li>
+        <li>工程表と対応しない工種は「未対応」として一覧化し、4Dでは表示しない。</li>
+        <li>部材0件なら次へ進めない（ERR-110）。</li>
+      </ul>
+    </div>
+    <div>
+      <div class="mock" role="img" aria-label="3Dプレビューの模式図">
+        <div class="mock-top"><span class="mock-title">3Dプレビュー<small>斜め・海側上空</small></span><span class="pill ok">29部材</span></div>
+        <div style="height:210px;background:linear-gradient(180deg,var(--view-top),var(--view-bot));display:grid;place-items:center;position:relative">
+          <svg viewBox="0 0 360 160" width="100%" height="100%" aria-hidden="true">
+            <g opacity=".9">
+              <polygon points="40,110 300,110 260,140 80,140" fill="#2b86a8" opacity=".18"/>
+              <polygon points="80,95 260,95 250,110 90,110" fill="#8f8f7a"/>
+              <rect x="95" y="70" width="34" height="25" fill="#2f6f8f"/>
+              <rect x="134" y="70" width="34" height="25" fill="#2f6f8f"/>
+              <rect x="173" y="70" width="34" height="25" fill="#2f6f8f"/>
+              <rect x="212" y="70" width="34" height="25" fill="#2f6f8f"/>
+              <rect x="95" y="62" width="34" height="8" fill="#6b7f8f"/>
+              <rect x="134" y="62" width="34" height="8" fill="#6b7f8f"/>
+              <rect x="173" y="62" width="34" height="8" fill="#6b7f8f"/>
+              <rect x="212" y="62" width="34" height="8" fill="#6b7f8f"/>
+              <polygon points="60,120 280,120 275,135 65,135" fill="#9b7d5f" opacity=".8"/>
+            </g>
+            <text x="8" y="14" font-size="9" fill="var(--mute)" font-family="var(--mono)">床掘 -13.0</text>
+            <text x="8" y="30" font-size="9" fill="var(--mute)" font-family="var(--mono)">ケーソン -11.0 → +2.0</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="scr05" data-od-id="scr05">
+  <h2>10. SCR-05 4D表示</h2>
+  <div class="grid2">
+    <div>
+      <h3>画面の構成</h3>
+      <ul class="tight">
+        <li><b>3Dビュー</b>: マウス回転・ズーム・パン。視点プリセット（斜め/海側/上空/断面）。</li>
+        <li><b>日付バー</b>: 現在日、再生/停止、速度（1/2/7/30日/秒）、日付スライダー。</li>
+        <li><b>工程ストリップ</b>: 工程表のバー、現在日線、進捗率。</li>
+        <li><b>凡例</b>: 工種色。クリックで強調。</li>
+        <li><b>部材一覧</b>: 工種・レイヤ・面積・標高。行クリックで3D強調。</li>
+      </ul>
+    </div>
+    <div>
+      <h3>4Dの規則</h3>
+      <table>
+        <thead><tr><th>進行方向</th><th>見え方</th><th>対象例</th></tr></thead>
+        <tbody>
+          <tr><td>延長方向</td><td>クリップ面が端から進む</td><td>床掘・基礎捨石・裏込・裏埋・舗装</td></tr>
+          <tr><td>1つずつ</td><td>順番に出現</td><td>ケーソン5函、係船柱、防舷材</td></tr>
+          <tr><td>下から積む</td><td>高さ方向に伸びる</td><td>上部工</td></tr>
+          <tr><td>即時</td><td>開始日に表示</td><td>準備工・片付け</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">日付は工程表の範囲（サンプル: 2027/04/01〜2028/03/24）をスライダーで移動。終端で再生すると先頭へ戻る。</div>
+    </div>
+  </div>
+  <h4>操作とショートカット</h4>
+  <table>
+    <thead><tr><th>操作</th><th>マウス</th><th>キーボード</th></tr></thead>
+    <tbody>
+      <tr><td>視点回転</td><td>左ドラッグ</td><td>矢印キー（フォーカス時）</td></tr>
+      <tr><td>ズーム</td><td>ホイール</td><td>+ / -</td></tr>
+      <tr><td>パン</td><td>右ドラッグ</td><td>Shift + 矢印</td></tr>
+      <tr><td>再生/停止</td><td>スペース</td><td>Space</td></tr>
+      <tr><td>日付移動</td><td>スライダー</td><td>← →（1日）</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="dialogs" data-od-id="dialogs">
+  <h2>11. DLG-01 保存・開く／DLG-02 確認</h2>
+  <div class="grid2">
+    <div>
+      <h3>DLG-01 保存・開く</h3>
+      <ul class="tight">
+        <li>保存: 案件コード・案件名・説明を入力。既定値は「岸壁工事（サンプル）」。上書き確認あり。</li>
+        <li>開く: ブラウザ保存の一覧（更新日時・部材数）。API接続時は「サーバの案件」タブ。</li>
+        <li>削除は確認ダイアログ（DLG-02）を挟む。</li>
+        <li>保存容量が5MBに近い場合は警告。超過時は ERR-107。</li>
+      </ul>
+    </div>
+    <div>
+      <h3>DLG-02 確認</h3>
+      <ul class="tight">
+        <li>上書き保存、削除、未確定のまま3Dへ進む、の3用途。</li>
+        <li>本文は1文で「何が起きるか」を書き、主ボタンは破壊的操作のみ赤。</li>
+        <li>Esc・背景クリックで閉じる。フォーカスは主ボタンへ。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="states" data-od-id="states">
+  <h2>12. 状態設計（Loading / Empty / Error / Success）</h2>
+  <table>
+    <thead><tr><th>画面</th><th>Loading</th><th>Empty</th><th>Error</th><th>Success</th></tr></thead>
+    <tbody>
+      <tr><td>SCR-01</td><td>解析中バー</td><td>ドロップゾーン</td><td>ERR-101/102/103</td><td>件数＋プレビュー</td></tr>
+      <tr><td>SCR-02</td><td>—</td><td>「図面を先に読み込んでください」</td><td>—</td><td>確定数と残件数</td></tr>
+      <tr><td>SCR-03</td><td>—</td><td>「確定した工種がありません」</td><td>ERR-109</td><td>有効工種数</td></tr>
+      <tr><td>SCR-04</td><td>生成中（部材数に応じたバー）</td><td>「3D化できる部材がありません」</td><td>ERR-110</td><td>部材数・面積・警告</td></tr>
+      <tr><td>SCR-05</td><td>シーン構築中</td><td>「4D表示できる部材がありません」</td><td>WebGL初期化失敗</td><td>再生可能</td></tr>
+      <tr><td>DLG-01</td><td>保存中</td><td>「保存された案件はありません」</td><td>ERR-107/111</td><td>「保存しました」トースト</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    通信エラー（API接続時）は画面を止めません。オフライン継続を選べるようにし、
+    「サーバに保存できませんでした。ブラウザには保存されています」と明示します。
+  </div>
+</section>
+
+<section id="data" data-od-id="data">
+  <h2>13. データ契約（画面・API・DB）</h2>
+  <h3>画面が保持する状態</h3>
+<pre>{
+  "step": 1,
+  "drawing": { "meta": {...}, "layers": [...], "entities": [...] },
+  "schedule": { "rows": [...], "badRows": [...] },
+  "assignments": [{ "layer": "CAISSON", "workTypeCode": "040", "confidence": 0.93, "confirmed": true }],
+  "elevations": [{ "workTypeCode": "040", "top": 2.0, "bottom": -11.0, "sequence": "each", "enabled": true }],
+  "dictionary": [{ "pattern": "CAISSON", "matchType": "contains", "workTypeCode": "040" }],
+  "parts": [...],
+  "timeline": { "start": 0, "end": 0, "current": 0 }
+}</pre>
+  <h3>API（検証環境のみ）</h3>
+  <table>
+    <thead><tr><th>メソッド</th><th>パス</th><th>用途</th><th>備考</th></tr></thead>
+    <tbody>
+      <tr><td class="num">GET</td><td><code>/healthz</code></td><td>稼働確認</td><td>DB接続状態を含む</td></tr>
+      <tr><td class="num">GET</td><td><code>/api/catalog/work-types</code></td><td>工種マスタ</td><td>Seed</td></tr>
+      <tr><td class="num">GET</td><td><code>/api/catalog/dictionary</code></td><td>辞書</td><td>Seed + 学習</td></tr>
+      <tr><td class="num">POST</td><td><code>/api/dictionary/learn</code></td><td>辞書学習</td><td>書込</td></tr>
+      <tr><td class="num">GET</td><td><code>/api/cases</code></td><td>案件一覧</td><td>—</td></tr>
+      <tr><td class="num">GET</td><td><code>/api/cases/:code</code></td><td>案件取得</td><td>—</td></tr>
+      <tr><td class="num">PUT</td><td><code>/api/cases/:code</code></td><td>案件保存</td><td>transaction、revision 増加</td></tr>
+    </tbody>
+  </table>
+  <h3>DB（PostgreSQL）</h3>
+  <table>
+    <thead><tr><th>テーブル</th><th>役割</th><th>主な制約</th></tr></thead>
+    <tbody>
+      <tr><td><code>work_types</code></td><td>工種マスタ</td><td>PK code (3桁)</td></tr>
+      <tr><td><code>dictionary_terms</code></td><td>工種辞書</td><td>unique(pattern, match_type), FK work_type</td></tr>
+      <tr><td><code>cases</code></td><td>案件</td><td>unique(code), revision</td></tr>
+      <tr><td><code>case_drawings</code></td><td>図面メタ</td><td>PK case_id</td></tr>
+      <tr><td><code>case_schedule_rows</code></td><td>工程行</td><td>FK case_id, 削除カスケード</td></tr>
+      <tr><td><code>case_assignments</code></td><td>工種割当</td><td>FK case_id, FK work_type</td></tr>
+      <tr><td><code>case_elevations</code></td><td>標高</td><td>PK(case_id, work_type_code)</td></tr>
+    </tbody>
+  </table>
+  <p class="muted">ブラウザ単体（Standalone）ではDBを使わず、同じ JSON を localStorage へ保存します。API接続時のみPostgreSQLへ同期します。</p>
+</section>
+
+<section id="a11y" data-od-id="a11y">
+  <h2>14. レスポンシブ・アクセシビリティ</h2>
+  <div class="grid2">
+    <div>
+      <h3>端末</h3>
+      <ul class="tight">
+        <li>PC中心。1280×800以上を標準。</li>
+        <li>1200px以下: 左ナビ 180px、KPIは4件まで。</li>
+        <li>980px以下: ナビを上部の横スクロールタブへ。表は横スクロール。</li>
+        <li>スマートフォン最適化は対象外（表示崩れしないことのみ確認）。</li>
+      </ul>
+    </div>
+    <div>
+      <h3>アクセシビリティ（WCAG 2.1 AA 相当）</h3>
+      <ul class="tight">
+        <li>コントラスト 4.5:1 以上。状態は色＋文字で示す。</li>
+        <li>キーボードだけで F1 を完了できる。可視フォーカス、Escで閉じる。</li>
+        <li>ダイアログは <code>&lt;dialog&gt;</code> とフォーカストラップ。</li>
+        <li>フォームは <code>label</code> と紐付け、エラーは <code>aria-describedby</code>。</li>
+        <li>トーストは <code>aria-live="polite"</code>。3Dキャンバスには代替テキストと操作説明。</li>
+        <li><code>prefers-reduced-motion</code> で再生アニメーションを抑制。</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="errors" data-od-id="errors">
+  <h2>15. エラーコード</h2>
+  <table>
+    <thead><tr><th>コード</th><th>意味</th><th>表示場所</th><th>回復</th></tr></thead>
+    <tbody>
+      <tr><td class="num">ERR-101</td><td>未対応のファイル形式</td><td>SCR-01 インライン</td><td>DXF/CSVを選び直す</td></tr>
+      <tr><td class="num">ERR-102</td><td>DXFの解析に失敗</td><td>SCR-01 インライン</td><td>別のDXF、またはASCII DXFで保存</td></tr>
+      <tr><td class="num">ERR-103</td><td>要素数が上限（20万）超過</td><td>SCR-01 インライン</td><td>図面を分割</td></tr>
+      <tr><td class="num">ERR-104</td><td>工程表が空、または日付を読めない</td><td>SCR-01/03</td><td>列名・日付形式を確認</td></tr>
+      <tr><td class="num">ERR-105</td><td>工程表の行に不備（終了&lt;開始など）</td><td>SCR-01 警告リスト</td><td>該当行を修正して再取込</td></tr>
+      <tr><td class="num">ERR-106</td><td>工程表と部材の工種が未対応</td><td>SCR-04 警告</td><td>工種コード/名称を合わせる</td></tr>
+      <tr><td class="num">ERR-107</td><td>ブラウザ保存の容量超過</td><td>DLG-01</td><td>案件を削除、またはAPI保存</td></tr>
+      <tr><td class="num">ERR-108</td><td>APIに接続できない</td><td>ヘッダの状態</td><td>オフライン継続</td></tr>
+      <tr><td class="num">ERR-109</td><td>標高が不正（天端≦底面など）</td><td>SCR-03 行</td><td>数値を修正</td></tr>
+      <tr><td class="num">ERR-110</td><td>3D化できる部材がない</td><td>SCR-04</td><td>輪郭・標高・工種を確認</td></tr>
+      <tr><td class="num">ERR-111</td><td>サーバ保存に失敗</td><td>DLG-01</td><td>ブラウザ保存は継続</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="acceptance" data-od-id="acceptance">
+  <h2>16. 受入条件</h2>
+  <ul class="check">
+    <li>AC-01 サンプルDXF＋CSVから 8工種・29部材が生成される。</li>
+    <li>AC-02 主要レイヤ（CAISSON/MOUND/4D_050_上部工/Layer3/裏埋/エプロン舗装/FENDER/係船柱）の工種が推定され、Layer3 は注記「裏込石」から 045 と推定される。</li>
+    <li>AC-03 断面図から10件の標高注記を抽出し、一括反映できる。</li>
+    <li>AC-04 4D再生で、日付に応じて延長・1つずつ・積み上げの3方式が確認できる。</li>
+    <li>AC-05 保存→再読込で部材数・工種・標高が一致する。</li>
+    <li>AC-06 <code>file://</code> でStandalone HTMLが動作し、外部通信しない。</li>
+    <li>AC-07 API接続時に案件一覧・辞書学習が動作し、PostgreSQLへRead/Writeできる。</li>
+    <li>AC-08 Empty / Loading / Error / Success の各状態を再現して確認する。</li>
+    <li>AC-09 キーボードのみで F1 を完了できる。</li>
+    <li>AC-10 検証環境（Cloudflare Preview）上で F1 を操作できる。</li>
+  </ul>
+</section>
+
+<section id="out" data-od-id="out">
+  <h2>17. 対象外・将来</h2>
+  <table>
+    <thead><tr><th>区分</th><th>内容</th><th>扱い</th></tr></thead>
+    <tbody>
+      <tr><td>今回対象外</td><td>DWG直接、SXF、PDF、Excel、MS Project XML、J-LandXML</td><td>第2段階。UIには「第2段階」と表示</td></tr>
+      <tr><td>今回対象外</td><td>AIによる工種推定、Blender MP4、IFC/glTF出力</td><td>第2段階</td></tr>
+      <tr><td>今回対象外</td><td>複数ユーザー、Entra ID SSO、本番環境</td><td>個人MVPの範囲外</td></tr>
+      <tr><td>将来</td><td>方式B（断面形状を法線に沿って押し出す）</td><td>第1.5〜2段階。今回は方式Aのみ</td></tr>
+      <tr><td>将来</td><td>曲線法線、配筋・曲面、スキャン図面の寸法</td><td>Backlog</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="opendesign" data-od-id="opendesign">
+  <h2>18. OpenDesign 利用記録</h2>
+  <table>
+    <thead><tr><th>項目</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>OpenDesign</td><td>v0.21.1 / <code>http://127.0.0.1:5173</code>（ローカル稼働）</td></tr>
+      <tr><td>プロジェクト</td><td>Drawing-to-4D Studio — 画面設計（id: <code>drawing-to-4d-studio</code>）</td></tr>
+      <tr><td>利用した方向性</td><td><code>tech-utility</code>（表の密度・等幅数値・ヘアライン）＋ <code>human-approachable</code>（角丸・余白）</td></tr>
+      <tr><td>取得したトークン</td><td>palette / font / posture を本仕様のトークンへ反映</td></tr>
+      <tr><td>成果物</td><td><code>docs/design/d4d-studio-design.html</code>（本ファイル）を OpenDesign のプロジェクト成果物として登録</td></tr>
+      <tr><td>検査</td><td><code>od lint</code> の結果を実装前に記録（P0 0件を確認）</td></tr>
+      <tr><td>実装後の比較</td><td>主要画面のスクリーンショットと本仕様を比較し、差異を <code>docs/design/README.md</code> に記録</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="approval" class="approval" data-od-id="approval">
+  <h2>19. 承認</h2>
+  <p>この設計は、Phase 1 MVP の WebUI 実装前に承認を得るものです。承認後、同じ範囲の実装・修正・テストには都度の確認を挟みません。仕様の重大変更は再承認をお願いします。</p>
+  <table>
+    <thead><tr><th>番号</th><th>選択肢</th><th>意味</th></tr></thead>
+    <tbody>
+      <tr><td class="num">1</td><td>この内容を承認して実装を進める</td><td>推奨。本仕様どおりに5ステップ＋2ダイアログを実装</td></tr>
+      <tr><td class="num">2</td><td>修正してから再提示する</td><td>修正点を番号で指定（例: 「SCR-02の列を減らす」）</td></tr>
+      <tr><td class="num">3</td><td>今回は保留する</td><td>WebUIは保留し、独立した検証・記録のみ続ける</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<footer>
+  Drawing-to-4D Studio — WebUI 設計仕様 v1.0 / 2026-11-18 / OpenDesign 0.21.1 利用<br>
+  本資料の岸壁工事・図面・数値はすべて架空のサンプルです。
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,190 @@
+{
+  "generatedAt": "2026-11-18T00:17:53.467Z",
+  "generator": "scripts/verify-mvp.ts",
+  "environment": {
+    "node": "v22.22.3",
+    "apiBase": "http://127.0.0.1:8792"
+  },
+  "summary": {
+    "checks": 29,
+    "passed": 29,
+    "allOk": true
+  },
+  "sample": {
+    "drawing": {
+      "layers": 20,
+      "entities": 66,
+      "units": "m"
+    },
+    "schedule": {
+      "rows": 10
+    },
+    "parts": {
+      "total": 29,
+      "byWorkType": {
+        "050": 5,
+        "040": 5,
+        "070": 15,
+        "045": 1,
+        "030": 1,
+        "080": 1,
+        "060": 1
+      }
+    },
+    "timeline": {
+      "start": "2027/04/01",
+      "end": "2028/03/24"
+    }
+  },
+  "api": {
+    "status": "ok",
+    "detail": "PUT revision=1; GET entities=66, rows=10, assignments=20, elevations=10"
+  },
+  "checks": [
+    {
+      "name": "DXF: units=m",
+      "ok": true,
+      "detail": "units=6"
+    },
+    {
+      "name": "DXF: 20 layers / 66 entities",
+      "ok": true,
+      "detail": "20/66"
+    },
+    {
+      "name": "CSV: 10 rows / 0 bad",
+      "ok": true,
+      "detail": "10/0"
+    },
+    {
+      "name": "estimate: CAISSON → 040",
+      "ok": true,
+      "detail": "040 / 0.93"
+    },
+    {
+      "name": "estimate: MOUND → 030",
+      "ok": true,
+      "detail": "030 / 0.88"
+    },
+    {
+      "name": "estimate: 4D_050_上部工 → 050",
+      "ok": true,
+      "detail": "050 / 0.98"
+    },
+    {
+      "name": "estimate: Layer3 → 045",
+      "ok": true,
+      "detail": "045 / 0.66"
+    },
+    {
+      "name": "estimate: 裏埋 → 060",
+      "ok": true,
+      "detail": "060 / 0.94"
+    },
+    {
+      "name": "estimate: エプロン舗装 → 080",
+      "ok": true,
+      "detail": "080 / 0.95"
+    },
+    {
+      "name": "estimate: FENDER → 070",
+      "ok": true,
+      "detail": "070 / 0.92"
+    },
+    {
+      "name": "estimate: 係船柱 → 070",
+      "ok": true,
+      "detail": "070 / 0.95"
+    },
+    {
+      "name": "exclude: dimension/normal/section/annotation",
+      "ok": true,
+      "detail": "DIM=true, 4D_法線=true, TEXT=true, SEC-CAISSON=true, SEC-床掘=true"
+    },
+    {
+      "name": "confirm: >= 7 work types",
+      "ok": true,
+      "detail": "8 layers"
+    },
+    {
+      "name": "elevation: 10 notes",
+      "ok": true,
+      "detail": "10"
+    },
+    {
+      "name": "elevation: applied 10",
+      "ok": true,
+      "detail": "10"
+    },
+    {
+      "name": "elevation: caisson top/bottom = 2.0/-11.0",
+      "ok": true,
+      "detail": "2/-11"
+    },
+    {
+      "name": "elevation: upper top/bottom = 3.5/2.0",
+      "ok": true,
+      "detail": "3.5/2"
+    },
+    {
+      "name": "elevation: valid",
+      "ok": true,
+      "detail": "no errors"
+    },
+    {
+      "name": "parts: 29 total",
+      "ok": true,
+      "detail": "29"
+    },
+    {
+      "name": "parts: 040=5 / 050=5 / 070=15",
+      "ok": true,
+      "detail": "040=5, 050=5, 070=15"
+    },
+    {
+      "name": "parts: auto-closed contour warning present",
+      "ok": true,
+      "detail": "エプロン舗装:閉じていない輪郭を自動で閉じました"
+    },
+    {
+      "name": "parts: all work types matched to schedule",
+      "ok": true,
+      "detail": "none"
+    },
+    {
+      "name": "timeline: 2027/04/01–2028/03/24",
+      "ok": true,
+      "detail": "2027/04/01–2028/03/24"
+    },
+    {
+      "name": "4D: all hidden at start",
+      "ok": true,
+      "detail": "0 visible"
+    },
+    {
+      "name": "4D: all visible at end",
+      "ok": true,
+      "detail": "29/29 visible"
+    },
+    {
+      "name": "4D: caisson each-mode reveals 3/5 at midpoint",
+      "ok": true,
+      "detail": "3/5 visible"
+    },
+    {
+      "name": "4D: mound extend-mode clip moves",
+      "ok": true,
+      "detail": "clipX=50"
+    },
+    {
+      "name": "4D: upper stack starts at bottom",
+      "ok": true,
+      "detail": "scaleY=0"
+    },
+    {
+      "name": "F2: API save → reload matches",
+      "ok": true,
+      "detail": "PUT revision=1; GET entities=66, rows=10, assignments=20, elevations=10"
+    }
+  ]
+}

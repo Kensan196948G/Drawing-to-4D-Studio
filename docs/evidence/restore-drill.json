@@ -1,0 +1,14 @@
+{
+  "generatedAt": "2026-11-18T00:19:55.968Z",
+  "generator": "scripts/restore-drill.sh",
+  "sourceDb": "d4d_studio_preview",
+  "targetDb": "d4d_studio_restore_test",
+  "dumpBytes": 45442,
+  "verify": "PASS",
+  "restored": {
+    "cases": 2,
+    "workTypes": 10,
+    "elevations": 20
+  },
+  "cleanup": "target DB dropped and dump removed after verification"
+}

@@ -1,0 +1,16 @@
+[Unit]
+Description=Drawing-to-4D Studio Preview Cloudflare Tunnel (d4d.mirai-dx-platform.com)
+Documentation=file:///home/kensan/d4d-studio/docs/deployment.md
+After=network-online.target drawing-to-4d-api.service
+Wants=network-online.target
+Requires=drawing-to-4d-api.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/cloudflared --no-autoupdate --config /home/kensan/d4d-studio/deploy/cloudflared/drawing-to-4d.yml tunnel run
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+
+[Install]
+WantedBy=default.target

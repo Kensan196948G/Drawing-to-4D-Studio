@@ -1,0 +1,54 @@
+{
+  "name": "drawing-to-4d-studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Drawing-to-4D Studio — 2D施工計画図（DXF）と工程表（CSV）から4Dを作る Phase 1 MVP",
+  "engines": {
+    "node": ">=22.11"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,magenta \"pnpm run dev:api\" \"pnpm run dev:web\"",
+    "dev:api": "tsx watch src/api/server.ts",
+    "dev:web": "vite",
+    "build": "pnpm run build:web && pnpm run build:standalone",
+    "build:web": "vite build",
+    "build:standalone": "vite build --mode standalone",
+    "start": "tsx src/api/server.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.api.json --noEmit && tsc -p tsconfig.scripts.json --noEmit",
+    "lint": "eslint . --max-warnings=0",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:e2e": "playwright test",
+    "db:migrate": "tsx scripts/db.ts migrate",
+    "db:seed": "tsx scripts/db.ts seed",
+    "db:verify": "tsx scripts/db.ts verify",
+    "db:reset": "tsx scripts/db.ts reset --yes",
+    "secret-scan": "node scripts/secret-scan.mjs",
+    "verify:all": "pnpm run typecheck && pnpm run lint && pnpm run test && pnpm run build && pnpm run secret-scan",
+    "e2e:server": "tsx scripts/e2e-server.ts"
+  },
+  "dependencies": {
+    "@fastify/static": "^10.1.11",
+    "fastify": "^5.12.8",
+    "pg": "^8.23.1",
+    "three": "^0.187.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "concurrently": "^10.0.7",
+    "eslint": "^10.15.0",
+    "prettier": "^3.10.1",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vite": "^8.3.8",
+    "vite-plugin-singlefile": "^2.3.4",
+    "vitest": "^5.1.0"
+  }
+}

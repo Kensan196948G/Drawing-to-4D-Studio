@@ -7,8 +7,8 @@
 | 項目 | 状態 |
 | --- | --- |
 | フェーズ | P3（中核エンジン）完了 → P4（WebUI）設計承認待ち |
-| repo / branch | `Kensan196948G/Drawing-to-4D-Studio`（作成予定）/ `auto/phase1-mvp` |
-| 基準SHA | 未コミット（初回コミット前） |
+| repo / branch | `Kensan196948G/Drawing-to-4D-Studio` / `auto/phase1-mvp` |
+| 基準SHA | `4b9c36c`（draft PR #1） |
 | 中核エンジン | 実装済み。単体テスト37件成功 |
 | API・DB | 実装済み。結合テスト10件成功、DB verify PASS |
 | 設計 | OpenDesign 登録済み、lint 0/0/0。**承認待ち** |
@@ -81,6 +81,12 @@
 5. `.github/workflows/ci.yml` の適用を依頼（人間）。CI 緑を確認。
 6. Preview 配備（Tunnel / systemd / Access / DB）と実操作。
 7. 最終報告と引継ぎ。
+
+## 5-1. PR
+
+- draft PR #1: https://github.com/Kensan196948G/Drawing-to-4D-Studio/pull/1
+- base: `main` / head: `auto/phase1-mvp`
+- CI: 未設定（`deploy/ci/ci.yml` の人間適用待ち）
 
 ## 6. ブロッカー
 

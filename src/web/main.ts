@@ -259,7 +259,12 @@ class App {
     setText('#confirm-title', options.title);
     setText('#confirm-body', options.body);
     const ok = document.querySelector<HTMLButtonElement>('#confirm-ok');
-    if (ok) ok.textContent = options.confirmLabel ?? '続行する';
+    if (ok) {
+      ok.textContent = options.confirmLabel ?? '続行する';
+      const primary = options.tone === 'primary';
+      ok.classList.toggle('danger', !primary);
+      ok.classList.toggle('p', primary);
+    }
     this.confirmAction = options.onConfirm;
     if (!dialog.open) dialog.showModal();
   }

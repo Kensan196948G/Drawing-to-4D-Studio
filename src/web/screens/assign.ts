@@ -240,8 +240,12 @@ export function mountAssign(ctx: AppContext, root: HTMLElement): void {
     if (pending > 0) {
       ctx.confirm({
         title: '未確定のレイヤがあります',
-        body: `未確定のレイヤが ${pending} 件あります。未確定のまま進むと、そのレイヤは3D化されません。続行しますか？`,
+        body:
+          pending === 1
+            ? '1 件のレイヤが未確定です。このまま進むと3D化されません。続行しますか？'
+            : `${pending} 件のレイヤが未確定です。このまま進むと、該当のレイヤは3D化されません。続行しますか？`,
         confirmLabel: '未確定のまま進む',
+        tone: 'primary',
         onConfirm: () => ctx.setStep(3),
       });
       return;

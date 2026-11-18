@@ -26,7 +26,7 @@
 | Preview 保護 | `curl -o /dev/null -w '%{http_code}' https://d4d.mirai-dx-platform.com/` | 302（Accessログイン） | 2026-11-18 09:17 |
 | Preview 再起動 | `pnpm deploy:preview` | ビルド→再起動→healthz 200 / preview checks 7/7 | 2026-11-18 09:21 |
 | DB 復元 | `bash scripts/restore-drill.sh` | **PASS**（cases=2 / work_types=10 / elevations=20） | `docs/evidence/restore-drill.json` |
-| E2E | `pnpm test:e2e` | **8件成功**（F1/F2/F3・Empty・キーボード・smoke・screenshots・Standaloneオフライン） | `tests/e2e/*.spec.ts` |
+| E2E | `pnpm test:e2e` | **9件成功**（F1/F2/F3・未確定ダイアログ・Empty・キーボード・smoke・screenshots・Standaloneオフライン） | `tests/e2e/*.spec.ts` |
 
 ## 2. 単体テストの内容
 
@@ -56,13 +56,14 @@
 
 ## 4. E2E
 
-WebUI実装後の E2E は **8件成功**（2026-11-18 09:57 JST）。
+WebUI実装後の E2E は **9件成功**（2026-11-18 10:36 JST）。
 
 | テスト | 内容 | 結果 |
 | --- | --- | --- |
 | F1 | サンプル読込 → 一括確定 → Layer3修正 → 標高注記 → 3D生成29部材 → 4D再生 → 保存 → 再読込 | 成功 |
 | F2 | 保存後にページ再読込し、ブラウザ保存から同じ4Dを復元（29部材 / 開始日） | 成功 |
 | F3 | 未知レイヤを手動で040に修正 → 辞書学習 → 再取込で信頼度100% | 成功 |
+| 未確定ダイアログ | 1件/複数件で自然な文言、続行ボタンが通常色（dangerでない） | 成功 |
 | Empty | 図面未読込のEmpty状態、step-2の無効化 | 成功 |
 | Keyboard | スキップリンクのフォーカスと遷移 | 成功 |
 | Smoke ×3 | healthz / サンプル案件API / app shell + CSP | 成功 |

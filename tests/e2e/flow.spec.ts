@@ -110,6 +110,18 @@ test.describe('Phase 1 flows', () => {
     await expect(page.locator(`[data-testid="row-${layer}"] .pill`)).toContainText('100%');
   });
 
+  test('unconfirmed dialog uses natural wording and a primary action', async ({ page }) => {
+    await loadSampleAndOpenAssign(page);
+    await page.getByTestId('next').click();
+    const dialog = page.locator('#confirm-dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText('件のレイヤが未確定です');
+    await expect(dialog).toContainText('3D化されません');
+    await expect(page.locator('#confirm-ok')).not.toHaveClass(/danger/);
+    await page.getByRole('button', { name: '戻る' }).click();
+    await expect(dialog).not.toBeVisible();
+  });
+
   test('Empty state and keyboard navigation', async ({ page }) => {
     await page.goto('/');
     await expect(page.locator('#main')).toContainText('まだ図面がありません');

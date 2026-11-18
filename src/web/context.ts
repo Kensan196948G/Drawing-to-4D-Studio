@@ -5,6 +5,8 @@ export interface ConfirmOptions {
   title: string;
   body: string;
   confirmLabel?: string;
+  /** 破壊的操作のみ danger。通常の続行は primary。 */
+  tone?: 'danger' | 'primary';
   onConfirm: () => void;
 }
 

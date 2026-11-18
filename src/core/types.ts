@@ -239,6 +239,7 @@ export interface SavedDrawingMeta {
   layerCount: number;
   entityCount: number;
   bounds: Bounds;
+  sha256?: string;
 }
 
 /** 案件の保存形式（localStorage / API 共通） */

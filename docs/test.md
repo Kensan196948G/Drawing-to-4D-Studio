@@ -15,7 +15,7 @@
 | Migration（空DB） | `tsx scripts/db.ts migrate` | 成功（applied=1） | `d4d_studio` |
 | Seed | `tsx scripts/db.ts seed` | 成功（workTypes=10 / dictionary=40 / layers=20 / entities=66 / rows=10 / assignments=20 / elevations=10） | `d4d_studio` |
 | DB verify | `tsx scripts/db.ts verify` | **PASS（10項目）** | 出力 |
-| Secret scan | `node scripts/secret-scan.mjs` | 成功（76ファイル、検出0） | exit 0 |
+| Secret scan | `node scripts/secret-scan.mjs` | 成功（100ファイル、検出0） | exit 0 |
 | 依存監査 | `pnpm audit --prod --audit-level=high` | 既知脆弱性なし | exit 0 |
 | ライセンス | `pnpm licenses list --prod` | 84件（MIT 69 / BlueOak 6 / BSD-3 3 / ISC 6、コピーレフトなし） | 出力 |
 | Build（Web） | `vite build` | 成功 | `dist/web/` |
@@ -26,7 +26,7 @@
 | Preview 保護 | `curl -o /dev/null -w '%{http_code}' https://d4d.mirai-dx-platform.com/` | 302（Accessログイン） | 2026-11-18 09:17 |
 | Preview 再起動 | `pnpm deploy:preview` | ビルド→再起動→healthz 200 / preview checks 7/7 | 2026-11-18 09:21 |
 | DB 復元 | `bash scripts/restore-drill.sh` | **PASS**（cases=2 / work_types=10 / elevations=20） | `docs/evidence/restore-drill.json` |
-| E2E（ハーネス） | `playwright test` | **3件成功**（healthz / API / app shell・CSP）。F1〜F3はUI実装後 | `tests/e2e/smoke.spec.ts` |
+| E2E | `pnpm test:e2e` | **7件成功**（F1/F2/F3・Empty・キーボード・smoke・screenshots） | `tests/e2e/*.spec.ts` |
 
 ## 2. 単体テストの内容
 
@@ -56,32 +56,27 @@
 
 ## 4. E2E
 
-ハーネスのスモーク3件は成功（2026-11-18 09:24）。WebUI 実装後に F1〜F3・状態・キーボードを追加する。計画:
+WebUI実装後の E2E は **7件成功**（2026-11-18 09:5x JST）。
 
-- F1: サンプル読込 → 工種確定 → 標高反映 → 3D生成 → 4D再生
-- F2: 保存 → 再読込
-- 状態: Empty / Loading / Error / Success
-- キーボードのみで F1
-- API接続時: 案件一覧・辞書学習
+| テスト | 内容 | 結果 |
+| --- | --- | --- |
+| F1 | サンプル読込 → 一括確定 → Layer3修正 → 標高注記 → 3D生成29部材 → 4D再生 → 保存 → 再読込 | 成功 |
+| F2 | 保存後にページ再読込し、ブラウザ保存から同じ4Dを復元（29部材 / 開始日） | 成功 |
+| F3 | 未知レイヤを手動で040に修正 → 辞書学習 → 再取込で信頼度100% | 成功 |
+| Empty | 図面未読込のEmpty状態、step-2の無効化 | 成功 |
+| Keyboard | スキップリンクのフォーカスと遷移 | 成功 |
+| Smoke ×3 | healthz / サンプル案件API / app shell + CSP | 成功 |
+| Screenshots | 主要5画面と保存ダイアログの撮影 | 成功 |
 
 実行方法:
 
 ```bash
-pnpm build:web
-pnpm test:e2e
+pnpm test:e2e            # build:web を含む
+pnpm exec playwright test tests/e2e/screenshots.spec.ts  # 画面証拠のみ
 ```
 
 `scripts/e2e-server.ts` がテストDB `d4d_studio_test` を作り直し、`dist/web` を `127.0.0.1:8791` で配信する。
-Playwright は Chromium headless shell 1.65.1 を使用。
-
-実測（2026-11-18 09:24）:
-
-```
-✓ healthz reports database connectivity
-✓ API serves the sample case
-✓ app shell is served with security headers
-3 passed (5.1s)
-```
+Playwright は Chromium headless shell 1.65.1 を使用。画面証拠は `docs/evidence/screens/01-import.png` 〜 `06-save-dialog.png`。
 
 ## 5. 運用検証（Preview）
 
@@ -100,8 +95,8 @@ Playwright は Chromium headless shell 1.65.1 を使用。
 | --- | --- |
 | 実図面での精度測定 | 実データが無い（架空サンプルのみ） |
 | 大規模DXF（数万要素）の性能 | 実データが無い。部材上限5,000で保護 |
-| Cloudflare Preview 上のE2E | 未配備 |
-| 複数ブラウザ | 主要1ブラウザ（Chromium）で確認予定 |
+| Cloudflare Preview 上のUI操作 | Access（OTP）ログイン後の実操作は未実施。配信・health・Access 302 は確認済み |
+| 複数ブラウザ | Chromium で確認。他ブラウザは未確認 |
 | 本番環境の負荷・障害試験 | 本番は対象外 |
 
 ## 7. 証拠の残し方

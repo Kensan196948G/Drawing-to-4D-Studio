@@ -26,7 +26,8 @@ test.describe('E2E harness', () => {
     expect(response.headers()['content-security-policy']).toContain("default-src 'self'");
 
     await page.goto('/');
-    await expect(page.locator('h1')).toContainText('Drawing-to-4D Studio');
-    await expect(page.locator('#app')).toHaveAttribute('data-ready', 'placeholder');
+    await expect(page.locator('#main')).toContainText('図面の取り込み');
+    await expect(page.locator('#step-nav')).toContainText('5 4D表示');
+    await expect(page.locator('#offline-badge')).toContainText('完全オフライン');
   });
 });

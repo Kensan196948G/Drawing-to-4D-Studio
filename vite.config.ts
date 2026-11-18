@@ -11,6 +11,7 @@ export default defineConfig(({ mode }) => {
   return {
     root,
     base: './',
+    publicDir: standalone ? false : 'public',
     plugins: standalone ? [viteSingleFile({ removeViteModuleLoader: true })] : [],
     resolve: {
       alias: {

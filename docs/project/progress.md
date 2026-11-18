@@ -6,15 +6,15 @@
 
 | 項目 | 状態 |
 | --- | --- |
-| フェーズ | P3（中核エンジン）完了 → P4（WebUI）設計承認待ち |
+| フェーズ | P4（WebUI）・P5（API/DB）・P8（Preview UI）完了。残り: Previewログイン後の実操作、CI適用、マージ |
 | repo / branch | `Kensan196948G/Drawing-to-4D-Studio` / `auto/phase1-mvp` |
 | 基準SHA | `4b9c36c`（draft PR #1） |
 | 中核エンジン | 実装済み。単体テスト37件成功 |
 | API・DB | 実装済み。結合テスト10件成功、DB verify PASS |
-| 設計 | OpenDesign 登録済み、lint 0/0/0。**承認待ち** |
-| WebUI | 未着手（承認後） |
+| 設計 | OpenDesign 登録済み、lint 0/0/0。**v1.0で実装継続（2026-11-18 09:35）** |
+| WebUI | **実装済み**。E2E 7件成功、画面証拠6枚 |
 | CI | テンプレート `deploy/ci/ci.yml`。`.github/workflows/**` はポリシー拒否のため人間適用待ち |
-| Preview | **基盤配備済み**（`https://d4d.mirai-dx-platform.com`、Access保護、UIはプレースホルダ） |
+| Preview | **UI配備済み**（`https://d4d.mirai-dx-platform.com`、Access保護）。ログイン後の画面操作は未実施 |
 
 ## 2. 完了した作業
 
@@ -65,7 +65,9 @@
 | `pnpm licenses list --prod` | 84件、コピーレフトなし | 2026-11-18 09:19 |
 | `bash scripts/restore-drill.sh` | PASS（cases=2 / work_types=10 / elevations=20） | 2026-11-18 09:20 |
 | `pnpm deploy:preview` | ビルド→再起動→7/7 PASS | 2026-11-18 09:21 |
-| `pnpm test:e2e`（ハーネス） | 3 passed（healthz/API/app shell/CSP） | 2026-11-18 09:24 |
+| `pnpm test:e2e` | **7 passed**（F1/F2/F3/Empty/Keyboard/Smoke/Screenshots） | 2026-11-18 09:52 |
+| 画面証拠 | `docs/evidence/screens/01〜06.png` | 2026-11-18 09:53 |
+| Preview UI配備 | `pnpm deploy:preview` → 7/7 PASS、originが新UIを配信 | 2026-11-18 09:53 |
 
 ## 4. 課題Round
 
@@ -89,8 +91,8 @@
 3. E2E（F1〜F3、状態、キーボード）を追加し、`pnpm test:e2e` を成功させる。
 4. ~~GitHub リポジトリ作成、ブランチ `auto/phase1-mvp`、PR 作成。~~ 完了（draft PR #1）
 5. `.github/workflows/ci.yml` の適用を依頼（人間）。CI 緑を確認。
-6. ~~Preview 基盤配備（Tunnel / systemd / Access / DB）~~ 完了。UI実装後に再ビルド・再起動し、画面で F1 を実操作。
-7. 最終報告と引継ぎ。
+6. ~~Preview 基盤配備（Tunnel / systemd / Access / DB）~~ 完了。UIも配備済み。Accessログイン後に画面でF1を実操作し、スクリーンショットを残す。
+7. PR更新、auto-merge、最終報告と引継ぎ。
 
 ## 5-1. PR
 
@@ -98,7 +100,15 @@
 - base: `main` / head: `auto/phase1-mvp`
 - CI: 未設定（`deploy/ci/ci.yml` の人間適用待ち）
 
-## 5-2. 承認不要で完了した追加作業（2026-11-18 09:16–09:21）
+## 5-2. WebUI実装（2026-11-18 09:35–09:53）
+
+- SCR-01〜05＋DLG-01/02 を実装（`src/web/**`）
+- E2E 7件（F1/F2/F3/Empty/Keyboard/Smoke/Screenshots）成功
+- 画面証拠 `docs/evidence/screens/01〜06.png`
+- Standalone 単一HTML（約716KB）
+- Preview にUIを配備（originで新UIを配信、publicはAccess 302）
+
+## 5-3. 承認不要で完了した追加作業（2026-11-18 09:16–09:21）
 
 - Preview 基盤: Tunnel `drawing-to-4d`、DNS `d4d`、systemd 2 unit、専用DB `d4d_studio_preview`
 - Cloudflare Access: OTP、`kensan1969@gmail.com` / `mirai-const.co.jp`、`/healthz` のみ bypass

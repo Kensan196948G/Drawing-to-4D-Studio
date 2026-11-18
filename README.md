@@ -14,10 +14,21 @@
 | --- | --- |
 | 中核エンジン（DXF/CSV/工種推定/標高/3D/4D） | 実装済み・単体テスト37件成功・MVP中核検証29/29 PASS |
 | API・PostgreSQL（Migration/Seed/案件・辞書） | 実装済み・結合テスト10件成功 |
-| WebUI（5ステップ＋2ダイアログ） | **設計承認待ち**（現在はプレースホルダのみ） |
-| Standalone HTML | ビルド経路は動作（UI実装後に完成） |
-| Cloudflare Preview | **基盤配備済み**（`https://d4d.mirai-dx-platform.com`、Access保護、UIはプレースホルダ） |
+| WebUI（5ステップ＋2ダイアログ） | **実装済み**・E2E 7件成功（F1/F2/F3・Empty・キーボード） |
+| Standalone HTML | **実装済み**（単一HTML 約716KB、`file://` で動作） |
+| Cloudflare Preview | **UI配備済み**（`https://d4d.mirai-dx-platform.com`、Access保護。ログイン後の画面操作は利用者確認待ち） |
 | CI | `deploy/ci/ci.yml` にテンプレートを用意。この環境のポリシーが `.github/workflows/**` への書込みを拒否するため人間適用が必要 |
+
+## 画面
+
+主要画面の証拠（E2Eで自動撮影）:
+
+- [SCR-01 取り込み](docs/evidence/screens/01-import.png)
+- [SCR-02 工種の割り当て](docs/evidence/screens/02-assign.png)
+- [SCR-03 高さの付与](docs/evidence/screens/03-elevation.png)
+- [SCR-04 3D生成](docs/evidence/screens/04-generate.png)
+- [SCR-05 4D表示](docs/evidence/screens/05-4d.png)
+- [保存ダイアログ](docs/evidence/screens/06-save-dialog.png)
 
 ## 主要フロー
 
@@ -75,7 +86,7 @@ pnpm build            # dist/web と dist/standalone/index.html
 pnpm build:standalone # 単一HTML（オフライン配布用）
 ```
 
-`dist/standalone/index.html` は `file://` で開けます（外部通信なし）。
+`dist/standalone/index.html` は `file://` で開けます（外部通信なし、約716KB）。
 
 ## テスト
 

@@ -13,8 +13,8 @@
 | P4 | WebUI実装 | 5ステップ＋2ダイアログ | E2EでF1〜F3成功 | 完了（E2E 8件成功） |
 | P5 | API・DB | Migration/Seed/API、Read/Write | 空DBから再構築、結合テスト成功 | 完了（結合10件・DB verify PASS） |
 | P6 | CI・文書 | GitHub Actions、README、各文書 | CI緑、Secret scan成功 | 文書・テンプレート完了。`.github/workflows/**` はポリシー拒否のため人間適用待ち |
-| P7 | GitHub | ブランチ、PR、auto-merge | Merged確認 | PR #1作成済み（draft）。CI適用待ち |
-| P8 | Preview | Tunnel、systemd、Access、実動作 | PreviewでF1成功 | 基盤配備済み（2026-11-18 09:16）。画面のF1はUI実装後 |
+| P7 | GitHub | ブランチ、PR、auto-merge | Merged確認 | 完了（PR #1 Merged / `41f443b` / main CI成功） |
+| P8 | Preview | Tunnel、systemd、Access、実動作 | PreviewでF1成功 | mainを配備済み（10:16）。公開URLのログイン後操作のみ利用者確認待ち |
 | P9 | 最終確認 | 受入条件の証拠、引継ぎ | 完了報告 | 未着手 |
 
 ## 2. タスク分解と依存

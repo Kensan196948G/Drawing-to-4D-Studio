@@ -6,8 +6,8 @@
 
 | 項目 | 状態 |
 | --- | --- |
-| フェーズ | P4（WebUI）・P5（API/DB）・P8（Preview UI）完了。残り: Previewログイン後の実操作、CI適用、マージ |
-| repo / branch | `Kensan196948G/Drawing-to-4D-Studio` / `auto/phase1-mvp` |
+| フェーズ | P4/P5/P7/P8 完了（PR #1 Merged、main CI成功、Preview main配備）。残り: 公開URLのログイン後操作確認 |
+| repo / branch | `Kensan196948G/Drawing-to-4D-Studio` / `main` |
 | 基準SHA | `4b9c36c`（draft PR #1） |
 | 中核エンジン | 実装済み。単体テスト37件成功 |
 | API・DB | 実装済み。結合テスト10件成功、DB verify PASS |
@@ -90,15 +90,16 @@
 2. 承認後: SCR-01〜05 / DLG-01/02 を実装（`src/web/**`）。
 3. E2E（F1〜F3、状態、キーボード）を追加し、`pnpm test:e2e` を成功させる。
 4. ~~GitHub リポジトリ作成、ブランチ `auto/phase1-mvp`、PR 作成。~~ 完了（draft PR #1）
-5. `.github/workflows/ci.yml` の適用を依頼（人間）。CI 緑を確認。
+5. ~~`.github/workflows/ci.yml` の適用を依頼（人間）。CI 緑を確認。~~ 利用者が適用（`0936160`）。PR/main CI成功
 6. ~~Preview 基盤配備（Tunnel / systemd / Access / DB）~~ 完了。UIも配備済み。Accessログイン後に画面でF1を実操作し、スクリーンショットを残す。
-7. PR更新、auto-merge、最終報告と引継ぎ。
+7. ~~PR更新、auto-merge~~ 完了（Merged `41f443b`）。最終報告と引継ぎ。
 
 ## 5-1. PR
 
-- draft PR #1: https://github.com/Kensan196948G/Drawing-to-4D-Studio/pull/1
+- PR #1: https://github.com/Kensan196948G/Drawing-to-4D-Studio/pull/1
 - base: `main` / head: `auto/phase1-mvp`
-- head SHA: `559a021`
+- merge commit: `41f443b`（2026-11-18 10:15 JST）
+- CI: PR / main とも `quality`・`e2e` 成功
 - CI: 未設定（`deploy/ci/ci.yml` の人間適用待ち）
 
 ## 5-2. WebUI実装（2026-11-18 09:35–09:53）

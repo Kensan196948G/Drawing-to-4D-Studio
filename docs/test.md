@@ -26,7 +26,7 @@
 | Preview 保護 | `curl -o /dev/null -w '%{http_code}' https://d4d.mirai-dx-platform.com/` | 302（Accessログイン） | 2026-11-18 09:17 |
 | Preview 再起動 | `pnpm deploy:preview` | ビルド→再起動→healthz 200 / preview checks 7/7 | 2026-11-18 09:21 |
 | DB 復元 | `bash scripts/restore-drill.sh` | **PASS**（cases=2 / work_types=10 / elevations=20） | `docs/evidence/restore-drill.json` |
-| E2E | `playwright test` | **未実施**（WebUI実装前） | — |
+| E2E（ハーネス） | `playwright test` | **3件成功**（healthz / API / app shell・CSP）。F1〜F3はUI実装後 | `tests/e2e/smoke.spec.ts` |
 
 ## 2. 単体テストの内容
 
@@ -54,9 +54,9 @@
 9. 存在しない案件は 404
 10. `APP_TOKEN` 設定時の書込み保護（401 / 201）
 
-## 4. E2E（未実施）
+## 4. E2E
 
-`tests/e2e/` は WebUI 実装後に追加する。計画:
+ハーネスのスモーク3件は成功（2026-11-18 09:24）。WebUI 実装後に F1〜F3・状態・キーボードを追加する。計画:
 
 - F1: サンプル読込 → 工種確定 → 標高反映 → 3D生成 → 4D再生
 - F2: 保存 → 再読込
@@ -71,7 +71,17 @@ pnpm build:web
 pnpm test:e2e
 ```
 
-`scripts/e2e-server.ts` がテストDBを作り直し、`dist/web` を配信する。
+`scripts/e2e-server.ts` がテストDB `d4d_studio_test` を作り直し、`dist/web` を `127.0.0.1:8791` で配信する。
+Playwright は Chromium headless shell 1.65.1 を使用。
+
+実測（2026-11-18 09:24）:
+
+```
+✓ healthz reports database connectivity
+✓ API serves the sample case
+✓ app shell is served with security headers
+3 passed (5.1s)
+```
 
 ## 5. 運用検証（Preview）
 

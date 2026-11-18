@@ -65,6 +65,7 @@
 | `pnpm licenses list --prod` | 84件、コピーレフトなし | 2026-11-18 09:19 |
 | `bash scripts/restore-drill.sh` | PASS（cases=2 / work_types=10 / elevations=20） | 2026-11-18 09:20 |
 | `pnpm deploy:preview` | ビルド→再起動→7/7 PASS | 2026-11-18 09:21 |
+| `pnpm test:e2e`（ハーネス） | 3 passed（healthz/API/app shell/CSP） | 2026-11-18 09:24 |
 
 ## 4. 課題Round
 
@@ -104,7 +105,8 @@
 - 検証: `verify-mvp.ts` 29/29、`verify-preview.mjs` 7/7、restore drill PASS、API再起動 PASS
 - 依存監査: 既知脆弱性なし、84件すべて寛容ライセンス
 - 運用スクリプト: `deploy-preview.sh`、`restore-drill.sh`
-- 文書: `docs/security.md`、Deployment/Test/Progress 更新
+- 文書: `docs/security.md`、`docs/project/05-ui-implementation-plan.md`、Deployment/Test/Progress 更新
+- E2Eハーネス: Playwright Chromium 導入、スモーク3件成功（F1〜F3はUI実装後）
 
 ## 6. ブロッカー
 

@@ -13,7 +13,7 @@
 | モデル | `deepseek-flash`（セッション選択中） | `list_agents` |
 | 権限 | file policy = danger-full-access。承認プロンプトは無効化（承認要求不可）。シェルはポリシープロキシ経由でネットワーク接続 | runtime context |
 | Node / pnpm | v22.22.3 / 12.21.0 | `node --version` / `pnpm --version` |
-| PostgreSQL | 18.6、`/var/run/postgresql:5432` 受付中、`postgresql.service` active | `psql --version` / `pg_isready` / `systemctl` |
+| PostgreSQL | **サーバー 16.15**（`psql` クライアントは 18.6）、`/var/run/postgresql:5432` 受付中、`postgresql.service` active | `show server_version` / `pg_isready` / `systemctl` |
 | GitHub CLI | 2.45.0、`Kensan196948G` でログイン（repo/workflow/gist/read:org） | `gh auth status` |
 | Cloudflare | `CLOUDFLARE_ACCOUNT_ID` 設定済み。`cloudflared tunnel list` 応答あり（既存トンネル多数） | 環境変数 / CLI |
 | OpenDesign | 0.21.1、`http://127.0.0.1:5173`（200）、daemon `127.0.0.1:7456` | `curl` / `od tools directions` |
@@ -55,7 +55,7 @@ OpenDesign は MCP としては本セッションに公開されていないが�
 | 実装 | DXF パーサ、工程表パーサ、工種推定、3D生成、4D再生のコードが無い | 同上 | `src/core` に実装済み（2026-11-18） |
 | テスト | 単体・結合・E2E が無い | 回帰を保証できない | Vitest / Playwright を追加 |
 | CI | GitHub Actions が無い | マージ条件を満たせない | `ci.yml` を追加 |
-| DB | Schema / Migration / Seed が無い | 保存・辞書共有を検証できない | PostgreSQL 18 に追加 |
+| DB | Schema / Migration / Seed が無い | 保存・辞書共有を検証できない | PostgreSQL 16（実測 16.15）に追加 |
 | 配備 | Preview が無い | 実操作の証拠を残せない | Cloudflare Tunnel + systemd |
 | 認証 | 認証・認可が無い | 公開範囲を制御できない | Cloudflare Access（第一候補） |
 | 文書 | README、要件、設計、DB、API、Test、Deployment が無い | 引継ぎできない | `docs/` に整備 |

@@ -38,8 +38,8 @@ DATABASE_URL='postgresql:///d4d_studio_preview?host=/var/run/postgresql' pnpm db
 DATABASE_URL='postgresql:///d4d_studio_preview?host=/var/run/postgresql' pnpm db:seed
 DATABASE_URL='postgresql:///d4d_studio_preview?host=/var/run/postgresql' pnpm db:verify
 
-# 2. ビルド
-pnpm build
+# 2. ビルドと再配置（Web + API再起動 + 確認）
+pnpm deploy:preview   # 既存のPreviewを更新する場合
 
 # 3. 設定（0600。値はリポジトリへ置かない）
 mkdir -p ~/.config/drawing-to-4d

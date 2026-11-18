@@ -61,6 +61,10 @@
 | `od artifacts create` | version 1, digest d3883990… | 2026-11-18 09:04 |
 | `tsx scripts/verify-mvp.ts` | **29/29 PASS**（API保存→再取得を含む） | 2026-11-18 09:19 |
 | Preview `/healthz` | 200 / db.ok=true / Access 302 | 2026-11-18 09:17 |
+| `pnpm audit --prod --audit-level=high` | 既知脆弱性なし | 2026-11-18 09:19 |
+| `pnpm licenses list --prod` | 84件、コピーレフトなし | 2026-11-18 09:19 |
+| `bash scripts/restore-drill.sh` | PASS（cases=2 / work_types=10 / elevations=20） | 2026-11-18 09:20 |
+| `pnpm deploy:preview` | ビルド→再起動→7/7 PASS | 2026-11-18 09:21 |
 
 ## 4. 課題Round
 
@@ -74,6 +78,8 @@
 | ESLintがTS7非対応 | 1 | typescript-eslint 8.73 がTS7を拒否 | TypeScript 6.0.3 へ | 解決 |
 | CIワークフロー書込み拒否 | 1 | self-evolution policy gate（DEPLOY=critical） | 回避せず `deploy/ci/ci.yml` にテンプレート化 | **ブロッカー（人間適用待ち）** |
 | DNS CNAMEが別トンネル（onegate）を指した | 1 | `cloudflared tunnel route dns` が名前解決で既存トンネルを選択 | `--overwrite-dns` ＋ トンネルID明示で再設定 | 解決（5cf82d33へ） |
+| PostgreSQLの版を誤記（18.6と記載） | 1 | `psql --version`（クライアント18.6）をサーバー版と混同 | `show server_version` で16.15と実測し、文書を修正 | 解決 |
+| pg_restoreがdumpを読めない | 1 | pg_dump 17 / pg_restore 16 / サーバー16 の混在 | サーバーと同一の16系クライアントに固定 | 解決（restore drill PASS） |
 
 ## 5. 次の一手
 
@@ -90,6 +96,15 @@
 - draft PR #1: https://github.com/Kensan196948G/Drawing-to-4D-Studio/pull/1
 - base: `main` / head: `auto/phase1-mvp`
 - CI: 未設定（`deploy/ci/ci.yml` の人間適用待ち）
+
+## 5-2. 承認不要で完了した追加作業（2026-11-18 09:16–09:21）
+
+- Preview 基盤: Tunnel `drawing-to-4d`、DNS `d4d`、systemd 2 unit、専用DB `d4d_studio_preview`
+- Cloudflare Access: OTP、`kensan1969@gmail.com` / `mirai-const.co.jp`、`/healthz` のみ bypass
+- 検証: `verify-mvp.ts` 29/29、`verify-preview.mjs` 7/7、restore drill PASS、API再起動 PASS
+- 依存監査: 既知脆弱性なし、84件すべて寛容ライセンス
+- 運用スクリプト: `deploy-preview.sh`、`restore-drill.sh`
+- 文書: `docs/security.md`、Deployment/Test/Progress 更新
 
 ## 6. ブロッカー
 

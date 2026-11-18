@@ -44,7 +44,7 @@ reference/      構想案・PoC・サンプル原本
 
 - Node.js 22 以上（実測 22.22.3）
 - pnpm 12 以上（実測 12.21.0）
-- PostgreSQL 16 以上（実測 18.6、ローカル `127.0.0.1:5432`）
+- PostgreSQL 16 以上（実測サーバー 16.15、`psql` クライアント 18.6、ローカル `127.0.0.1:5432`）
 
 ## セットアップ
 
@@ -88,6 +88,7 @@ pnpm test:e2e          # Playwright（UI実装後）
 pnpm secret-scan
 pnpm verify:mvp        # DXF→工種→標高→3D→4D→API保存/再取得（API起動中）
 pnpm verify:preview    # Preview の healthz / Access / カタログ / CSP を確認
+pnpm deploy:preview    # Webビルド → Preview API再起動 → 到達性確認
 pnpm verify:all        # typecheck + lint + unit + build + secret-scan
 ```
 
@@ -141,6 +142,7 @@ pnpm verify:all        # typecheck + lint + unit + build + secret-scan
 - [Test](docs/test.md)
 - [Deployment](docs/deployment.md)
 - [Limitations](docs/limitations.md)
+- [Security](docs/security.md)
 - [Progress](docs/project/progress.md)
 
 ## ライセンス

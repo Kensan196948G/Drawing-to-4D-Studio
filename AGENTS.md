@@ -56,7 +56,7 @@ pnpm secret-scan
 | --- | --- |
 | Node | 22 以上（実測 22.22.3） |
 | pnpm | 12.x（実測 12.21.0） |
-| PostgreSQL | 18（実測 18.6）。DB: `d4d_studio` / `d4d_studio_test` / `d4d_studio_preview` |
+| PostgreSQL | 16（実測サーバー 16.15、クライアント 18.6）。DB: `d4d_studio` / `d4d_studio_test` / `d4d_studio_preview` |
 | API | `127.0.0.1:8790`（dev） |
 | Web | `127.0.0.1:5179`（Vite、`/api` を 8790 へプロキシ） |
 | Preview | `https://d4d.mirai-dx-platform.com` → `127.0.0.1:8792`（予定） |

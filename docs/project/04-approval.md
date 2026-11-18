@@ -44,3 +44,4 @@
 | 2026-11-18 | 運用（承認不要） | Preview の Cloudflare Access アプリを作成（OTP、許可: kensan1969@gmail.com / mirai-const.co.jp）。`/healthz` のみ bypass | 実施済み（84df45bf… / 3d1f6243…） |
 | 2026-11-18 | 運用（承認不要） | Preview DB `d4d_studio_preview` を作成し migration/seed/verify | 実施済み（架空データのみ） |
 | 2026-11-18 09:35 | 設計承認 | ユーザー指示「続けて対応してください」 | 設計 v1.0 での実装継続と解釈。フロー・画面構成・データ契約の重大変更は再承認 |
+| 2026-11-18 10:46 | 利用者受入 | PreviewのF1操作と確認ダイアログ文言について回答「1」 | **承認（MVP完了）** |

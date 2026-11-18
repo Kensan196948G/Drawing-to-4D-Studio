@@ -16,8 +16,8 @@
 | API・PostgreSQL（Migration/Seed/案件・辞書） | 実装済み・結合テスト10件成功 |
 | WebUI（5ステップ＋2ダイアログ） | **実装済み**・E2E 8件成功（F1/F2/F3・Empty・キーボード・Standaloneオフライン） |
 | Standalone HTML | **実装済み**（単一HTML 約716KB、`file://` で動作） |
-| Cloudflare Preview | **UI配備済み**（`https://d4d.mirai-dx-platform.com`、Access保護。ログイン後の画面操作は利用者確認待ち） |
-| CI | `deploy/ci/ci.yml` にテンプレートを用意。この環境のポリシーが `.github/workflows/**` への書込みを拒否するため人間適用が必要 |
+| Cloudflare Preview | **main を配備済み**（`https://d4d.mirai-dx-platform.com`、Access保護。ログイン後の画面操作は利用者確認待ち） |
+| CI | **適用済み**（利用者が 2026-11-18 に適用）。PR #1 / main とも `quality`・`e2e` 成功 |
 
 ## 画面
 

@@ -1,7 +1,7 @@
 # Deployment — Cloudflare Preview（検証環境）
 
-> **状態: Preview基盤 配備済み（2026-11-18 09:16 JST）。WebUIは設計承認待ちのプレースホルダ。**
-> UI実装後に再ビルド・再起動し、最終検証を追記する。本番正式環境・本番DNS・本番自動配備は対象外。
+> **状態: Preview に Phase 1 MVP を配備済み（2026-11-18 10:16 JST、main `41f443b`）。**
+> 公開URLのAccessログイン後の画面操作のみ利用者確認待ち。本番正式環境・本番DNS・本番自動配備は対象外。
 
 ## 1. 構成（計画）
 
@@ -62,8 +62,8 @@ systemd unit と tunnel 設定は `deploy/systemd/` に置く（実装後）。
 | 項目 | 実測値 |
 | --- | --- |
 | URL | `https://d4d.mirai-dx-platform.com` |
-| 対象commit | `559a021`（WebUI実装） |
-| 配備日時 | 2026-11-18 09:16 JST（基盤）/ 2026-11-18 09:53 JST（UI） |
+| 対象commit | `41f443b`（main / PR #1 マージコミット） |
+| 配備日時 | 2026-11-18 09:16 JST（基盤）/ 09:53 JST（UI）/ **10:16 JST（main反映）** |
 | Tunnel | `drawing-to-4d` / `5cf82d33-4615-49c9-a4ba-a031310e4760` / 4コネクション（nrt01, nrt05, nrt14, nrt18） |
 | DNS | `d4d` CNAME → `5cf82d33-….cfargotunnel.com`（proxied） |
 | systemd | `drawing-to-4d-api.service`（active）、`drawing-to-4d-tunnel.service`（active） |
@@ -76,7 +76,7 @@ systemd unit と tunnel 設定は `deploy/systemd/` に置く（実装後）。
 | 静的配信 | 200、CSP / X-Frame-Options / nosniff 付与 |
 | API（カタログ） | 工種10件 / 辞書40件 / 案件 `SAMPLE-KANPEKI` |
 | UI配信 | origin `/` の title=`Drawing-to-4D Studio`、bundle に「工種の割り当て」を確認 |
-| F1 実操作（画面） | ローカルE2Eで成功（F1/F2/F3 ほか7件）。公開URLは **Accessログイン後の確認待ち** |
+| F1 実操作（画面） | ローカルE2Eで成功（F1/F2/F3 ほか8件）。公開URLは **Accessログイン後の確認待ち** |
 | 保存→再読込 | APIレベルで成功（`VERIFY-CORE-01`、66要素・10工程・20割当・10標高） |
 | スクリーンショット | `docs/evidence/screens/01-import.png` 〜 `06-save-dialog.png`（ローカルE2Eで撮影） |
 
@@ -99,18 +99,10 @@ systemd unit と tunnel 設定は `deploy/systemd/` に置く（実装後）。
 
 停止しても、ローカルの Standalone HTML と開発APIは利用できる。
 
-## 6. CI の適用
+## 6. CI
 
-`.github/workflows/ci.yml` は、この開発環境の self-evolution policy gate が
-`DEPLOY=critical` として書込みを拒否するため、AIからは配置できない。
-同一内容を [`deploy/ci/ci.yml`](ci/ci.yml) にテンプレートとして置いた。人間が次を実行して適用する。
+`.github/workflows/ci.yml` は self-evolution policy gate によりAIからは配置できなかったため、
+2026-11-18 に利用者が [`deploy/ci/ci.yml`](ci/ci.yml) を適用した（commit `0936160`）。
 
-```bash
-mkdir -p .github/workflows
-cp deploy/ci/ci.yml .github/workflows/ci.yml
-git add .github/workflows/ci.yml
-git commit -m "chore(ci): add CI workflow"
-git push
-```
-
-適用後、PR の Required Checks として `quality` と `e2e` が動く。
+- PR #1: `quality` / `e2e` 成功 → **Merged**（`41f443b`）
+- main: CI 成功（run 44214408017）

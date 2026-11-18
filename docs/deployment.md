@@ -62,8 +62,8 @@ systemd unit と tunnel 設定は `deploy/systemd/` に置く（実装後）。
 | 項目 | 実測値 |
 | --- | --- |
 | URL | `https://d4d.mirai-dx-platform.com` |
-| 対象commit | `41f443b`（main / PR #1 マージコミット） |
-| 配備日時 | 2026-11-18 09:16 JST（基盤）/ 09:53 JST（UI）/ **10:16 JST（main反映）** |
+| 対象commit | `406c462`（main / PR #3 マージコミット、UI文言修正） |
+| 配備日時 | 2026-11-18 09:16 JST（基盤）/ 09:53 JST（UI）/ 10:16 JST（main反映）/ **10:39 JST（文言修正）** |
 | Tunnel | `drawing-to-4d` / `5cf82d33-4615-49c9-a4ba-a031310e4760` / 4コネクション（nrt01, nrt05, nrt14, nrt18） |
 | DNS | `d4d` CNAME → `5cf82d33-….cfargotunnel.com`（proxied） |
 | systemd | `drawing-to-4d-api.service`（active）、`drawing-to-4d-tunnel.service`（active） |
@@ -76,7 +76,7 @@ systemd unit と tunnel 設定は `deploy/systemd/` に置く（実装後）。
 | 静的配信 | 200、CSP / X-Frame-Options / nosniff 付与 |
 | API（カタログ） | 工種10件 / 辞書40件 / 案件 `SAMPLE-KANPEKI` |
 | UI配信 | origin `/` の title=`Drawing-to-4D Studio`、bundle に「工種の割り当て」を確認 |
-| F1 実操作（画面） | ローカルE2Eで成功（F1/F2/F3 ほか8件）。公開URLは **Accessログイン後の確認待ち** |
+| F1 実操作（画面） | ローカルE2Eで成功（F1/F2/F3 ほか9件）。公開URLは **Accessログイン後の確認待ち** |
 | 保存→再読込 | APIレベルで成功（`VERIFY-CORE-01`、66要素・10工程・20割当・10標高） |
 | スクリーンショット | `docs/evidence/screens/01-import.png` 〜 `06-save-dialog.png`（ローカルE2Eで撮影） |
 

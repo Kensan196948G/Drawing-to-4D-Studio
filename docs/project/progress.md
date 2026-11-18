@@ -98,8 +98,9 @@
 
 - PR #1: https://github.com/Kensan196948G/Drawing-to-4D-Studio/pull/1
 - base: `main` / head: `auto/phase1-mvp`
-- merge commit: `41f443b`（2026-11-18 10:15 JST）
-- CI: PR / main とも `quality`・`e2e` 成功
+- merge commit: `41f443b`（PR #1）/ `c940090`（PR #2）/ `406c462`（PR #3: 文言修正）
+- CI: 各PR / main とも `quality`・`e2e` 成功
+- E2E: 9件（未確定ダイアログの文言・ボタン色を追加）
 - CI: 未設定（`deploy/ci/ci.yml` の人間適用待ち）
 
 ## 5-2. WebUI実装（2026-11-18 09:35–09:53）

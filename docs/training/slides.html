@@ -109,7 +109,7 @@
       </svg>
       <h1>Drawing-to-4D Studio</h1>
       <p class="t-sub">2Dの施工計画図と工程表から、施工順序が伝わる4Dをつくる</p>
-      <p class="t-meta">新人研修 ／ 60分 ／ Phase 1（試作版）</p>
+      <p class="t-meta">新人研修 ／ 90分（講義60＋演習30） ／ Phase 1（試作版）</p>
     </div>
   </section>
   <section class="slide " data-n="1">
@@ -274,6 +274,101 @@
     </div>
 
   </section>
+  <section class="slide" data-n="11">
+    <div class="s-head"><span class="s-no">11</span><h2>演習の進め方</h2></div>
+    <p class="lead">ここからは<b>手を動かします</b>。1人1台で、サンプル図面を使って最後まで通します。</p>
+    <div class="cards3">
+      <div class="card"><div class="ic">🎯</div><b>ゴール</b><p>4D再生 → 保存 → 開き直し まで自分でできる</p></div>
+      <div class="card"><div class="ic">⏱️</div><b>時間</b><p>20分（演習1: 10分 / 演習2: 5分 / 演習3: 5分）</p></div>
+      <div class="card"><div class="ic">📦</div><b>成果物</b><p>案件コード <code>ENS-イニシャル-01</code> で保存した案件</p></div>
+    </div>
+    <p class="note">つまずいたら手を挙げてください。まずは1人で、最後に隣の人と画面を見せ合いましょう。</p>
+  </section>
+
+  <section class="slide" data-n="12">
+    <div class="s-head"><span class="s-no">12</span><h2>演習1（10分）サンプルで4Dまで</h2></div>
+    <div class="two-col">
+      <div class="box" style="background:#fbfdff;border:1px solid var(--line)">
+        <b>手順</b>
+        <ol style="margin:8px 0 0;padding-left:22px">
+          <li>公開URLを開き、社内メールでログイン</li>
+          <li>「✨ サンプル図面で試す」を押す</li>
+          <li>STEP2：<b>一括確定</b> → Layer3 を <b>045</b> に</li>
+          <li>STEP3：「すべて反映」を押す</li>
+          <li>STEP4：「3Dを生成」→ <b>29部材</b></li>
+          <li>STEP5：<b>再生</b>（スペースキー）</li>
+        </ol>
+      </div>
+      <div class="box ok">
+        <b>確認ポイント（できたかの目印）</b>
+        <ul style="margin:8px 0 0;padding-left:22px">
+          <li>未確定が <b>0 件</b>になっている</li>
+          <li>3D部材が <b>29</b> と表示される</li>
+          <li>再生で日付が進み、部材が順に現れる</li>
+          <li>右上の <b>n / 5 完了</b> が増えていく</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="slide" data-n="13">
+    <div class="s-head"><span class="s-no">13</span><h2>演習2（5分）工種を直すと学習される</h2></div>
+    <div class="two-col">
+      <div class="box" style="background:#fbfdff;border:1px solid var(--line)">
+        <b>やること</b>
+        <ol style="margin:8px 0 0;padding-left:22px">
+          <li>STEP2で <b>Layer3</b> の工種を <b>045 渡土（裏込石）</b> に変える</li>
+          <li>STEP1 に戻り、<b>同じDXFをもう一度</b>取り込む</li>
+          <li>STEP2 で Layer3 が <b>100%</b> になっているか見る</li>
+        </ol>
+      </div>
+      <div class="box tint">
+        <b>なぜそうなる？</b>
+        <p style="margin:6px 0 0">手で直すと、その<b>レイヤ名が辞書に登録</b>されます。次回から同じ書き方の図面では、最初から当たるようになります。</p>
+        <p style="margin:10px 0 0;color:var(--sub)">＝ 同じ現場の繰り返しに効く（毎回直さなくてよくなる）</p>
+      </div>
+    </div>
+    <p class="note">うまく100%にならないときは、レイヤ名が一字一句同じか確認してください。</p>
+  </section>
+
+  <section class="slide" data-n="14">
+    <div class="s-head"><span class="s-no">14</span><h2>演習3（5分）保存して開き直す</h2></div>
+    <div class="two-col">
+      <div class="box" style="background:#fbfdff;border:1px solid var(--line)">
+        <b>やること</b>
+        <ol style="margin:8px 0 0;padding-left:22px">
+          <li>STEP5 右上の <b>保存</b></li>
+          <li>案件コード <code>ENS-イニシャル-01</code>、案件名は自由</li>
+          <li>ブラウザを<b>再読み込み</b>（F5）</li>
+          <li>右上の <b>開く</b> から選ぶ</li>
+        </ol>
+      </div>
+      <div class="box ok">
+        <b>確認ポイント</b>
+        <ul style="margin:8px 0 0;padding-left:22px">
+          <li>4D画面に戻り、<b>部材が29</b>のまま</li>
+          <li>日付が開始日に戻っている</li>
+          <li>もう一度再生できる</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">保存できるのは同じパソコン・同じブラウザです（約5MBまで）。API接続時はサーバにも保存されます。</p>
+  </section>
+
+  <section class="slide" data-n="15">
+    <div class="s-head"><span class="s-no">15</span><h2>講師用：つまずきと声かけ</h2></div>
+    <table class="trouble">
+      <tr><th>症状</th><th>原因</th><th>声かけ</th></tr>
+      <tr><td>次へ進めない</td><td>未確定のレイヤが残っている</td><td>「左の <b>橙の点</b> を見て、まとめて確定しましょう」</td></tr>
+      <tr><td>3Dが真っ白</td><td>WebGL無効 / リモートデスクトップ</td><td>「ローカルのChromeで開き直してみましょう」</td></tr>
+      <tr><td>天端と底面を間違えた</td><td>入力ミス</td><td>「自動で入れ替えて、メッセージが出ます」</td></tr>
+      <tr><td>保存できない</td><td>案件コードの形式</td><td>「英数字・ハイフン・アンダースコアで」</td></tr>
+      <tr><td>4Dに部材が出ない</td><td>工程表と工種名が対応していない</td><td>「STEP4の警告を見て、工種名を合わせましょう」</td></tr>
+    </table>
+    <p class="note">時間が余ったら：視点を「断面」に切り替えて、施工順の説明をしてみましょう。</p>
+  </section>
+
+
   <section class="slide " data-n="11">
     <div class="s-head"><span class="s-no">11</span><h2>まとめ</h2></div>
 
@@ -283,7 +378,7 @@
       <div class="card"><div class="ic">3</div><b>外に出さない</b><p>図面はブラウザ内。サンプルは架空</p></div>
     </div>
     <p class="final">🌐 https://d4d.mirai-dx-platform.com/</p>
-    <p class="note">演習：サンプル図面で「取り込み → 4D表示 → 保存」まで進めてみましょう</p>
+    <p class="note">次回の朝礼で、今日作った案件を4Dで見せてみましょう</p>
 
   </section>
 <div class="nav"><i id="bar"></i></div>

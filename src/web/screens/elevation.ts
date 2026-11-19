@@ -24,7 +24,7 @@ const SOURCE_LABELS: Record<string, string> = {
 export function renderElevation(ctx: AppContext): string {
   const { state } = ctx;
   if (!state.drawing) {
-    return `<section class="view"><div class="empty"><b>図面がありません</b>先にSCR-01でDXFを読み込んでください。<div style="margin-top:10px"><button class="btn" type="button" data-action="back">SCR-01へ戻る</button></div></div></section>`;
+    return `<section class="view"><div class="empty"><span class="empty-ico">${icon('upload')}</span><b>図面がありません</b>先にSCR-01でDXFを読み込んでください。<div class="empty-actions"><button class="btn" type="button" data-action="back">${icon('arrow')}SCR-01へ戻る</button></div></div></section>`;
   }
   const notes = extractElevationNotes(state.drawing);
   const errors = validateElevations(state.elevations);
@@ -57,7 +57,9 @@ export function renderElevation(ctx: AppContext): string {
                   ${state.elevations
                     .map((entry) => {
                       const workType = workTypeByCode(entry.workTypeCode);
-                      const entryErrors = errors.filter((error) => error.startsWith(workType?.name ?? entry.workTypeCode));
+                      const entryErrors = errors.filter((error) =>
+                        error.startsWith(workType?.name ?? entry.workTypeCode),
+                      );
                       return `<tr data-elev-row="${entry.workTypeCode}" class="${entryErrors.length > 0 ? 'excluded' : ''}">
                         <td><label class="check"><input type="checkbox" data-elev-enabled="${entry.workTypeCode}" data-testid="enabled-${entry.workTypeCode}" ${entry.enabled ? 'checked' : ''} aria-label="${escapeHtml(workType?.name ?? '')}を3D化する">3D</label></td>
                         <td><div class="row-title">${entry.workTypeCode}</div><div class="row-sub">${escapeHtml(workType?.name ?? '')}</div></td>
@@ -66,7 +68,10 @@ export function renderElevation(ctx: AppContext): string {
                         <td>
                           <select data-elev-seq="${entry.workTypeCode}" data-testid="sequence-${entry.workTypeCode}" aria-label="${escapeHtml(workType?.name ?? '')}の進行方向" ${entry.enabled ? '' : 'disabled'}>
                             ${Object.entries(SEQUENCE_LABELS)
-                              .map(([value, label]) => `<option value="${value}" ${entry.sequence === value ? 'selected' : ''}>${label}</option>`)
+                              .map(
+                                ([value, label]) =>
+                                  `<option value="${value}" ${entry.sequence === value ? 'selected' : ''}>${label}</option>`,
+                              )
                               .join('')}
                           </select>
                         </td>
@@ -90,11 +95,12 @@ export function renderElevation(ctx: AppContext): string {
           <div class="card-body">
             ${
               notes.length === 0
-                ? '<div class="empty" style="padding:18px"><b>標高注記が見つかりません</b>断面図の文字、または下の表へ直接入力してください。</div>'
+                ? `<div class="empty" style="padding:18px"><span class="empty-ico" style="width:42px;height:42px">${icon('ruler')}</span><b>標高注記が見つかりません</b>断面図の文字、または左の表へ直接入力してください。</div>`
                 : `<div class="note-list" data-testid="note-list">
                      ${notes
                        .map(
                          (note) => `<div class="note">
+                           <svg class="i" aria-hidden="true" style="color:var(--navy)"><use href="#i-ruler"></use></svg>
                            <span class="txt" title="${escapeHtml(note.source)}">${escapeHtml(note.source)}</span>
                            <span class="val">${fmtElevation(note.value)}</span>
                            ${note.workTypeCode ? `<button class="btn s" type="button" data-apply-note="${note.id}" aria-label="${escapeHtml(note.source)}を反映">反映</button>` : '<span class="pill mute">未対応</span>'}

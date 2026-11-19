@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" width="1280" height="360" role="img" aria-labelledby="bannerTitle bannerDesc">
+  <title id="bannerTitle">Drawing-to-4D Studio</title>
+  <desc id="bannerDesc">2Dの施工計画図と工程表から、施工順序が伝わる4Dをつくる。図面はブラウザの外に出ません。</desc>
+
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1280" y2="360" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b1e2d"/>
+      <stop offset="0.55" stop-color="#123c58"/>
+      <stop offset="1" stop-color="#1c5d86"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#4aa3d8" stop-opacity="0.45"/>
+      <stop offset="1" stop-color="#4aa3d8" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="faceTop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffc08c"/>
+      <stop offset="1" stop-color="#f4832f"/>
+    </linearGradient>
+    <linearGradient id="faceLeft" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1f6f9e"/>
+      <stop offset="1" stop-color="#124a6c"/>
+    </linearGradient>
+    <linearGradient id="faceRight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2f8fb4"/>
+      <stop offset="1" stop-color="#175c7c"/>
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#8fc4e0" stroke-width="1" opacity="0.10"/>
+    </pattern>
+    <symbol id="logoMark" viewBox="0 0 64 64">
+      <rect x="1" y="1" width="62" height="62" rx="15" fill="#ffffff" opacity="0.10"/>
+      <path d="M8 43l24 12 24-12" fill="none" stroke="#7fb6dc" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M32 11l15 7.5v15L32 41l-15-7.5v-15z" fill="url(#faceTop)"/>
+      <path d="M32 11l15 7.5-15 7.5-15-7.5z" fill="#ffffff" opacity="0.35"/>
+      <path d="M32 41v-15M47 18.5 32 26l-15-7.5" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linejoin="round" opacity="0.9"/>
+    </symbol>
+    <symbol id="iconFile" viewBox="0 0 24 24">
+      <path d="M6 3h8l4 4v14H6z" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M14 3v4h4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+    <symbol id="iconLock" viewBox="0 0 24 24">
+      <rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+    <symbol id="iconBolt" viewBox="0 0 24 24">
+      <path d="M13 2 5 14h6l-1 8 9-12h-6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    </symbol>
+  </defs>
+
+  <rect width="1280" height="360" fill="url(#bg)"/>
+  <rect width="1280" height="360" fill="url(#grid)"/>
+  <ellipse cx="1010" cy="150" rx="300" ry="190" fill="url(#glow)"/>
+
+  <g transform="translate(72 96)">
+    <use href="#logoMark" x="0" y="0" width="64" height="64"/>
+    <text x="84" y="18" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',system-ui,sans-serif" font-size="14" letter-spacing="3.2" fill="#9fd0ea">CONSTRUCTION 4D STUDIO</text>
+    <text x="84" y="66" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',system-ui,sans-serif" font-size="52" font-weight="800" fill="#ffffff">Drawing-to-4D</text>
+    <text x="432" y="66" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',system-ui,sans-serif" font-size="52" font-weight="800" fill="#ff9a52">Studio</text>
+    <text x="0" y="124" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',system-ui,sans-serif" font-size="23" fill="#d7e9f5">2Dの施工計画図と工程表から、施工順序が伝わる4Dへ</text>
+    <g transform="translate(0 154)" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',system-ui,sans-serif" font-size="15" fill="#e8f4fb">
+      <g>
+        <rect x="0" y="0" width="200" height="34" rx="17" fill="#ffffff" opacity="0.10"/>
+        <use href="#iconFile" x="14" y="8" width="17" height="17" color="#9fd0ea"/>
+        <text x="40" y="22">DXF ＋ CSV</text>
+      </g>
+      <g transform="translate(212 0)">
+        <rect x="0" y="0" width="216" height="34" rx="17" fill="#ffffff" opacity="0.10"/>
+        <use href="#iconLock" x="14" y="8" width="17" height="17" color="#9fd0ea"/>
+        <text x="40" y="22">図面は外に出ない</text>
+      </g>
+      <g transform="translate(440 0)">
+        <rect x="0" y="0" width="228" height="34" rx="17" fill="#ffffff" opacity="0.10"/>
+        <use href="#iconBolt" x="14" y="8" width="17" height="17" color="#ffb27a"/>
+        <text x="40" y="22">ブラウザだけで動く</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- 2D図面 → 3D → 4D -->
+  <g transform="translate(760 0)">
+  <!-- 2D図面（アイソメ平面） -->
+  <g opacity="0.9">
+    <ellipse cx="210" cy="266" rx="152" ry="50" fill="#06151f" opacity="0.35"/>
+    <polygon points="58,252 210,190 362,252 210,314" fill="#0f3a54" opacity="0.9" stroke="#5fa8cf" stroke-width="1.6"/>
+    <g stroke="#8fd0f0" stroke-width="1" opacity="0.28">
+      <path d="M88 242 L240 180"/><path d="M118 254 L270 192"/><path d="M148 266 L300 204"/>
+      <path d="M104 270 L256 208"/><path d="M134 282 L286 220"/><path d="M164 294 L316 232"/>
+    </g>
+    <polygon points="120,252 190,224 266,254 196,282" fill="none" stroke="#8fd0f0" stroke-width="1.6" stroke-dasharray="6 5"/>
+    <path d="M150 240 L215 214" stroke="#ff9a52" stroke-width="2" stroke-dasharray="4 4"/>
+    <path d="M215 214 L280 242" stroke="#ff9a52" stroke-width="2" stroke-dasharray="4 4"/>
+  </g>
+
+  <!-- 3Dブロック（順に立ち上がる） -->
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0 20;0 0" dur="1.0s" begin="0.0s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+        <animate attributeName="opacity" values="0;1" dur="0.7s" begin="0.0s" fill="freeze"/>
+        <polygon points="106.1,198.0 237.7,274.0 237.7,300.0 106.1,224.0" fill="url(#faceLeft)"/><polygon points="237.7,274.0 313.9,230.0 313.9,256.0 237.7,300.0" fill="url(#faceRight)"/><polygon points="182.3,154.0 313.9,230.0 237.7,274.0 106.1,198.0" fill="url(#faceTop)"/>
+      </g>
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0 20;0 0" dur="1.0s" begin="0.5s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+        <animate attributeName="opacity" values="0;1" dur="0.7s" begin="0.5s" fill="freeze"/>
+        <polygon points="139.0,177.0 229.1,229.0 229.1,283.0 139.0,231.0" fill="url(#faceLeft)"/><polygon points="229.1,229.0 281.0,199.0 281.0,253.0 229.1,283.0" fill="url(#faceRight)"/><polygon points="190.9,147.0 281.0,199.0 229.1,229.0 139.0,177.0" fill="url(#faceTop)"/>
+      </g>
+      <g>
+        <animateTransform attributeName="transform" type="translate" values="0 20;0 0" dur="1.0s" begin="1.0s" fill="freeze" calcMode="spline" keySplines="0.16 1 0.3 1"/>
+        <animate attributeName="opacity" values="0;1" dur="0.7s" begin="1.0s" fill="freeze"/>
+        <polygon points="158.0,126.0 223.9,164.0 223.9,180.0 158.0,142.0" fill="url(#faceLeft)"/><polygon points="223.9,164.0 262.0,142.0 262.0,158.0 223.9,180.0" fill="url(#faceRight)"/><polygon points="196.1,104.0 262.0,142.0 223.9,164.0 158.0,126.0" fill="url(#faceTop)"/>
+      </g>
+
+  <!-- タイムライン（4D） -->
+  <g transform="translate(60 322)">
+    <rect x="0" y="0" width="420" height="8" rx="4" fill="#ffffff" opacity="0.16"/>
+    <rect x="0" y="0" width="250" height="8" rx="4" fill="#2b86a8" opacity="0.75"/>
+    <rect x="0" y="-6" width="10" height="20" rx="5" fill="#ff9a52">
+      <animate attributeName="x" values="0;410;0" dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;1" keySplines="0.4 0 0.2 1;0.4 0 0.2 1"/>
+    </rect>
+    <text x="420" y="-14" text-anchor="end" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',system-ui,sans-serif" font-size="15" font-weight="700" fill="#ffb27a">4D</text>
+    <text x="0" y="-14" font-family="'Hiragino Sans','Yu Gothic','Noto Sans JP',system-ui,sans-serif" font-size="13" fill="#a8cbe0">工程に沿って、施工順に立ち上がる</text>
+  </g>
+  </g>
+</svg>

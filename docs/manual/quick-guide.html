@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Drawing-to-4D Studio 操作ガイド（1枚）</title>
+<style>
+  @page { size: A4 portrait; margin: 0; }
+  :root {
+    --ink:#10293f; --sub:#46607a; --mute:#7a8da0; --line:#d9e1e8;
+    --navy:#1c5d86; --navy-bg:#e8f1f8; --acc:#d9540a; --acc-bg:#fdeee4;
+    --green:#15835a; --green-bg:#e4f4ec; --amber:#b7791f; --amber-bg:#fdf3e1;
+    --red:#c23a2e; --red-bg:#fbe8e6; --vio:#6a4fc8; --vio-bg:#efebfb;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: #eef2f6; color: var(--ink);
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, system-ui, sans-serif;
+    font-size: 9pt; line-height: 1.5;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .page { width: 210mm; min-height: 297mm; margin: 0 auto; background: #fff; padding: 6mm 9mm 4mm; }
+  .bg { position: fixed; inset: 0; background: #eef2f6; z-index: -1; }
+  header {
+    display: flex; align-items: center; gap: 9mm;
+    background: linear-gradient(120deg, #0b1e2d, #1c5d86); color: #fff;
+    border-radius: 4mm; padding: 5mm 6mm; margin-bottom: 4mm;
+  }
+  header .logo { width: 14mm; height: 14mm; flex: none; }
+  header h1 { font-size: 16pt; margin: 0; letter-spacing: 0.01em; }
+  header .sub { font-size: 9pt; opacity: 0.9; margin-top: 1mm; }
+  header .meta { margin-left: auto; text-align: right; font-size: 8pt; line-height: 1.5; opacity: 0.92; }
+  header .url { font-family: ui-monospace, Consolas, monospace; font-size: 8.4pt; background: rgba(255,255,255,0.14); padding: 1mm 2.5mm; border-radius: 999px; display: inline-block; margin-top: 1mm; white-space: nowrap; }
+  h2 { font-size: 10.2pt; margin: 0 0 1.8mm; display: flex; align-items: center; gap: 1.6mm; }
+  h2 .n { width: 5.2mm; height: 5.2mm; border-radius: 50%; background: var(--navy); color: #fff; display: inline-grid; place-items: center; font-size: 8pt; }
+  section { margin-bottom: 2.8mm; }
+  .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 2.4mm; }
+  .step { border: 0.35mm solid var(--line); border-radius: 3mm; padding: 2.4mm 2.2mm; background: #fbfdff; }
+  .step .ico { width: 7mm; height: 7mm; border-radius: 2.2mm; background: var(--navy-bg); color: var(--navy); display: grid; place-items: center; margin-bottom: 1.2mm; }
+  .step .num { font-size: 7.6pt; color: var(--mute); font-family: ui-monospace, Consolas, monospace; }
+  .step b { display: block; font-size: 9.2pt; margin: 0.2mm 0 0.8mm; }
+  .step p { margin: 0; font-size: 7.9pt; color: var(--sub); line-height: 1.45; }
+  .step .tip { display: block; margin-top: 1mm; font-size: 7.6pt; color: var(--acc); }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 4mm; }
+  .box { border: 0.35mm solid var(--line); border-radius: 3mm; padding: 2.8mm; }
+  .box.navy { background: var(--navy-bg); border-color: transparent; }
+  .box.green { background: var(--green-bg); border-color: transparent; }
+  .box.red { background: var(--red-bg); border-color: transparent; }
+  .box.amber { background: var(--amber-bg); border-color: transparent; }
+  ul { margin: 0; padding-left: 4.4mm; }
+  li { margin: 0.5mm 0; }
+  .conf { display: grid; gap: 1.6mm; }
+  .conf .row { display: grid; grid-template-columns: 22mm 1fr; align-items: center; gap: 2.4mm; }
+  .bar { height: 2.6mm; border-radius: 2mm; }
+  .bar.ok { background: var(--green); width: 95%; }
+  .bar.warn { background: var(--amber); width: 62%; }
+  .bar.err { background: var(--red); width: 22%; }
+  .pill { display: inline-block; font-size: 7.6pt; font-weight: 700; border-radius: 999px; padding: 0.2mm 2.2mm; }
+  .pill.ok { background: var(--green-bg); color: var(--green); }
+  .pill.warn { background: var(--amber-bg); color: var(--amber); }
+  .pill.err { background: var(--red-bg); color: var(--red); }
+  .flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 1.6mm; font-size: 8.4pt; }
+  .flow .node { border: 0.35mm solid var(--line); border-radius: 2.4mm; padding: 2.2mm; text-align: center; background: #fbfdff; }
+  .flow .arrow { color: var(--mute); font-size: 12pt; }
+  .faq { display: grid; grid-template-columns: 1fr 1fr; gap: 2.4mm 5mm; }
+  .faq b { color: var(--navy); }
+  footer {
+    margin-top: 2.4mm; border-top: 0.35mm solid var(--line); padding-top: 2.6mm;
+    display: flex; align-items: center; gap: 3mm; font-size: 7.8pt; color: var(--mute);
+  }
+  footer .tag { background: var(--green-bg); color: var(--green); border-radius: 999px; padding: 0.4mm 2.4mm; font-weight: 700; }
+  footer .sp { margin-left: auto; }
+  svg.i { width: 100%; height: 100%; }
+  @media screen { body { padding: 8mm 0; } .page { box-shadow: 0 6px 30px rgba(16,41,63,0.16); } }
+  @media print { body { background: #fff; } .page { box-shadow: none; margin: 0; } }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="page">
+
+  <header>
+    <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+      <rect x="1" y="1" width="62" height="62" rx="15" fill="#ffffff" opacity="0.12"/>
+      <path d="M8 43l24 12 24-12" fill="none" stroke="#7fb6dc" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M32 11l15 7.5v15L32 41l-15-7.5v-15z" fill="#ff9a52"/>
+      <path d="M32 11l15 7.5-15 7.5-15-7.5z" fill="#ffffff" opacity="0.35"/>
+      <path d="M32 41v-15M47 18.5 32 26l-15-7.5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <h1>Drawing-to-4D Studio 操作ガイド</h1>
+      <div class="sub">2Dの施工計画図と工程表から、施工順序が伝わる4Dをつくる ／ 1枚でわかる5ステップ</div>
+    </div>
+    <div class="meta">
+      <div>Phase 1（試作版）</div>
+      <div class="url">https://d4d.mirai-dx-platform.com/</div>
+    </div>
+  </header>
+
+  <section>
+    <h2><span class="n">0</span>まず知っておくこと</h2>
+    <div class="two">
+      <div class="box navy">
+        <b>これは「説明の道具」です</b>
+        <p style="margin:1mm 0 0">完成形ではなく<b>建つ順番</b>を見せます。朝礼・打合せ・引き継ぎで「この順で進みます」を共有するために使います。</p>
+      </div>
+      <div class="box green">
+        <b>図面は外に出ません</b>
+        <p style="margin:1mm 0 0">DXF・CSVの解析から3D・4Dまで、すべて<b>ブラウザの中</b>で処理します。外部AI・外部サービスへ送りません。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">1</span>5つのステップ（この順に進めば完成します）</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 15v4h16v-4" fill="none" stroke="currentColor" stroke-width="1.8"/></svg></div>
+        <span class="num">STEP 1</span><b>取り込み</b>
+        <p>DXFと工程表CSVを置く。迷ったら「サンプル図面で試す」。</p>
+        <span class="tip">→ 右上の青いボタンで次へ</span>
+      </div>
+      <div class="step">
+        <div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 13l9 5 9-5M3 17.5l9 5 9-5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></div>
+        <span class="num">STEP 2</span><b>工種の割り当て</b>
+        <p>レイヤごとに工種を確認。<b>緑は一括確定</b>、橙・赤は目で確認。</p>
+        <span class="tip">→ 未確定は3D化されません</span>
+      </div>
+      <div class="step">
+        <div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M3 16.5 16.5 3 21 7.5 7.5 21z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M7.5 13.5l2 2M10.5 10.5l2 2M13.5 7.5l2 2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></div>
+        <span class="num">STEP 3</span><b>高さの付与</b>
+        <p>断面の標高注記を「すべて反映」。足りない分だけ手入力。</p>
+        <span class="tip">→ 天端 &gt; 底面 を守る</span>
+      </div>
+      <div class="step">
+        <div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M12 22V12M21 7l-9 5-9-5" fill="none" stroke="currentColor" stroke-width="1.7"/></svg></div>
+        <span class="num">STEP 4</span><b>3D生成</b>
+        <p>押し出して立体に。警告は「どのレイヤが、なぜ」まで確認。</p>
+        <span class="tip">→ 警告は確認してから進む</span>
+      </div>
+      <div class="step">
+        <div class="ico"><svg class="i" viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z" fill="currentColor"/></svg></div>
+        <span class="num">STEP 5</span><b>4D表示</b>
+        <p>再生・日付・視点を操作。スペースで再生、←→で1日移動。</p>
+        <span class="tip">→ 保存で次回も再現できます</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">2</span>「確からしさ」の見方（STEP 2）</h2>
+    <div class="two">
+      <div class="conf">
+        <div class="row"><span class="pill ok">80%以上</span><div><div class="bar ok"></div><small>ほぼ確実。まとめて確定してOK</small></div></div>
+        <div class="row"><span class="pill warn">50〜79%</span><div><div class="bar warn"></div><small>推定。必ず目で確認してから確定</small></div></div>
+        <div class="row"><span class="pill err">50%未満</span><div><div class="bar err"></div><small>あいまい。必ず手で選ぶ</small></div></div>
+      </div>
+      <div class="box amber">
+        <b>覚えておくと便利</b>
+        <ul>
+          <li>「信頼度80%以上を一括確定」で緑をまとめて確定</li>
+          <li>「未確定のみ表示」で確認が必要な行だけ表示</li>
+          <li>手で選ぶと<b>辞書に学習</b>され、次回から自動で当たる</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">3</span>使う場面 / 使わない場面</h2>
+    <div class="two">
+      <div class="box green">
+        <b style="color:var(--green)">✅ 使う場面</b>
+        <ul>
+          <li>朝礼・安全朝礼での施工範囲の共有</li>
+          <li>協力会社との順番・重なりの確認</li>
+          <li>若手・新任への「全体像」の説明</li>
+          <li>発注者への進捗説明（日付を指定）</li>
+        </ul>
+      </div>
+      <div class="box red">
+        <b style="color:var(--red)">⚠️ 使わない場面</b>
+        <ul>
+          <li>数量の拾い出し（積算の代わりにしない）</li>
+          <li>鉄筋の干渉チェック・施工計画の精査</li>
+          <li>完成形の最終確認（概略です）</li>
+          <li>実データ・社外秘図面の取り込み（サンプルは架空）</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="n">4</span>保存と再開</h2>
+    <div class="flow">
+      <div class="node">右上の <b>保存</b></div><div class="arrow">→</div>
+      <div class="node">案件コードと案件名を入力<br><small>（例: SEAWALL-2026-01）</small></div><div class="arrow">→</div>
+      <div class="node">次回は <b>開く</b> から選択<br><small>ブラウザ保存 約5MBまで</small></div>
+    </div>
+    <p style="margin:1.6mm 0 0;font-size:8.4pt;color:var(--sub)">
+      「API 接続」と表示されているときは、サーバにも保存され<b>別の端末</b>でも開けます。
+    </p>
+  </section>
+
+  <section>
+    <h2><span class="n">5</span>困ったとき</h2>
+    <div class="faq">
+      <div><b>Q. 3Dが真っ白になる</b><br>Chrome / Edge の最新版でお試しください（WebGL2が必要）。リモートデスクトップ経由では無効なことがあります。</div>
+      <div><b>Q. ログインできない</b><br><code>mirai-const.co.jp</code> などの許可されたメールアドレスが必要です。コードが届かないときは迷惑メールもご確認ください。</div>
+      <div><b>Q. 4Dの日付が合わない</b><br>工程表CSVの日付をそのまま使います。工程表を直して読み込み直してください。</div>
+      <div><b>Q. 図面はどこかに送られる？</b><br>送られません。図面・工程表の処理はすべてブラウザ内で完結します。</div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="tag">🔒 図面は外に出ません</span>
+    <span>Drawing-to-4D Studio ／ Phase 1（試作版） ／ 社内利用</span>
+    <span class="sp">お問い合わせ:  DX推進担当</span>
+  </footer>
+</div>
+</body>
+</html>

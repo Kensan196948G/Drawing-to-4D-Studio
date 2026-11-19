@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Drawing-to-4D Studio 新人研修スライド</title>
+<style>
+  :root {
+    --ink:#10293f; --sub:#46607a; --mute:#7a8da0; --line:#d9e1e8;
+    --navy:#1c5d86; --navy-bg:#e8f1f8; --acc:#d9540a; --acc-bg:#fdeee4;
+    --green:#15835a; --green-bg:#e4f4ec; --amber:#b7791f; --amber-bg:#fdf3e1;
+    --red:#c23a2e; --red-bg:#fbe8e6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", Meiryo, system-ui, sans-serif;
+    background: #0b141b; color: var(--ink); -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .slide {
+    width: 1280px; height: 720px; background: #fff; padding: 56px 64px 48px;
+    display: none; flex-direction: column; position: relative; overflow: hidden;
+  }
+  .slide.active { display: flex; animation: slide-in 0.45s cubic-bezier(0.16, 1, 0.3, 1) both; }
+  @keyframes slide-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @media screen {
+    body { display: grid; place-items: center; }
+    .slide { border-radius: 6px; box-shadow: 0 20px 60px rgba(0,0,0,0.45); }
+  }
+
+  .s-head { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+  .s-no { font-family: ui-monospace, Consolas, monospace; font-size: 14px; color: #fff; background: var(--navy); border-radius: 999px; padding: 3px 12px; }
+  .s-head h2 { font-size: 30px; margin: 0; letter-spacing: 0.01em; }
+  .slide p, .slide li { font-size: 18px; line-height: 1.75; }
+  .note { margin-top: auto; font-size: 15px !important; color: var(--mute); }
+
+  .slide.title { background: linear-gradient(120deg, #0b1e2d, #1c5d86); color: #fff; align-items: center; justify-content: center; text-align: center; }
+  .t-logo { width: 92px; height: 92px; }
+  .title h1 { font-size: 52px; margin: 18px 0 8px; letter-spacing: 0.01em; }
+  .t-sub { font-size: 22px !important; opacity: 0.95; margin: 0; }
+  .t-meta { font-size: 15px !important; opacity: 0.75; margin-top: 22px; }
+
+  .cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { border: 1px solid var(--line); border-radius: 14px; padding: 22px; background: #fbfdff; }
+  .card .ic { width: 46px; height: 46px; border-radius: 12px; background: var(--navy-bg); display: grid; place-items: center; font-size: 22px; margin-bottom: 12px; }
+  .card b { display: block; font-size: 20px; margin-bottom: 6px; }
+  .card p { font-size: 16px !important; color: var(--sub); margin: 0; }
+
+  .eq { display: flex; align-items: center; justify-content: center; gap: 18px; margin: 10px 0 26px; }
+  .eq-item { width: 220px; border: 1px solid var(--line); border-radius: 16px; padding: 20px; text-align: center; background: #fbfdff; }
+  .eq-item.accent { border-color: var(--acc); background: var(--acc-bg); }
+  .eq-item .ico3d { font-size: 32px; display: block; margin-bottom: 8px; }
+  .eq-item b { display: block; font-size: 22px; }
+  .eq-item small { font-size: 14px; color: var(--sub); }
+  .eq-op { font-size: 34px; color: var(--mute); }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .box { border-radius: 14px; padding: 18px 22px; }
+  .box.ok { background: var(--green-bg); }
+  .box.bad { background: var(--red-bg); }
+  .box b { font-size: 19px; }
+  .box ul { margin: 8px 0 0; padding-left: 22px; }
+  .box li { font-size: 16px !important; }
+
+  .rail { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; padding: 0; margin: 16px 0 0; }
+  .rail li { border: 1px solid var(--line); border-radius: 14px; padding: 18px 16px; background: #fbfdff; }
+  .rail .rn { display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--navy); color: #fff; font-size: 15px; margin-bottom: 10px; }
+  .rail b { display: block; font-size: 17px; }
+  .rail small { display: block; font-size: 13px; color: var(--sub); margin-top: 4px; }
+
+  .shot { display: grid; grid-template-columns: 1.45fr 1fr; gap: 26px; flex: 1; min-height: 0; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; object-position: top left; border: 1px solid var(--line); border-radius: 12px; }
+  .shot-side ul { margin: 0; padding-left: 22px; }
+  .shot-side li { font-size: 17px !important; margin-bottom: 8px; }
+  .callout { margin-top: 14px; background: var(--navy-bg); color: var(--navy); border-radius: 10px; padding: 10px 14px; font-size: 15px !important; }
+
+  .conf { display: grid; gap: 8px; margin-top: 14px; }
+  .conf div { font-size: 15px !important; }
+  .pill { font-size: 13px; font-weight: 700; border-radius: 999px; padding: 2px 10px; margin-right: 6px; }
+  .pill.ok { background: var(--green-bg); color: var(--green); }
+  .pill.warn { background: var(--amber-bg); color: var(--amber); }
+  .pill.err { background: var(--red-bg); color: var(--red); }
+
+  .final { text-align: center; font-size: 30px !important; font-weight: 700; color: var(--navy); margin: 28px 0 8px; }
+
+  .nav { position: fixed; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255,255,255,0.12); }
+  .nav i { display: block; height: 100%; width: 0; background: var(--acc); transition: width 0.3s ease; }
+  .counter { position: fixed; right: 18px; bottom: 16px; color: #cfe6f4; font-family: ui-monospace, Consolas, monospace; font-size: 13px; }
+  .hint { position: fixed; left: 18px; bottom: 14px; color: #8fb3c8; font-size: 12px; }
+
+  @page { size: 1280px 720px; margin: 0; }
+  @media print {
+    html, body { background: #fff; height: auto; }
+    body { display: block; }
+    .slide { display: flex !important; page-break-after: always; box-shadow: none; border-radius: 0; }
+    .slide:last-child { page-break-after: auto; }
+    .nav, .counter, .hint { display: none !important; }
+    .slide.active { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <section class="slide title" data-n="0">
+    <div class="t-wrap">
+      <svg class="t-logo" viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="1" y="1" width="62" height="62" rx="15" fill="#ffffff" opacity="0.12"/>
+        <path d="M8 43l24 12 24-12" fill="none" stroke="#7fb6dc" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M32 11l15 7.5v15L32 41l-15-7.5v-15z" fill="#ff9a52"/>
+        <path d="M32 11l15 7.5-15 7.5-15-7.5z" fill="#ffffff" opacity="0.35"/>
+        <path d="M32 41v-15M47 18.5 32 26l-15-7.5" fill="none" stroke="#fff" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>
+      <h1>Drawing-to-4D Studio</h1>
+      <p class="t-sub">2Dの施工計画図と工程表から、施工順序が伝わる4Dをつくる</p>
+      <p class="t-meta">新人研修 ／ 60分 ／ Phase 1（試作版）</p>
+    </div>
+  </section>
+  <section class="slide " data-n="1">
+    <div class="s-head"><span class="s-no">01</span><h2>この研修で持ち帰ること</h2></div>
+
+    <p class="lead">この60分で、<b>現場で使える最小限</b>を持ち帰ります。</p>
+    <div class="cards3">
+      <div class="card"><div class="ic">🧭</div><b>5ステップの流れ</b><p>取り込み → 割当 → 高さ → 3D → 4D。迷ったらこの順。</p></div>
+      <div class="card"><div class="ic">🟢</div><b>「確からしさ」の見方</b><p>緑はまとめてOK。橙・赤は人の目で確認。</p></div>
+      <div class="card"><div class="ic">🔒</div><b>データの扱い</b><p>図面はブラウザの外に出ない。推定は下書き、確定は人。</p></div>
+    </div>
+    <p class="note">※ 数量拾い・干渉チェックには使わない（説明・合意形成のための道具）</p>
+
+  </section>
+  <section class="slide " data-n="2">
+    <div class="s-head"><span class="s-no">02</span><h2>4Dってなに？</h2></div>
+
+    <div class="eq">
+      <div class="eq-item"><span class="ico3d">🧊</span><b>3D</b><small>形（完成した姿）</small></div>
+      <div class="eq-op">＋</div>
+      <div class="eq-item"><span class="ico3d">📅</span><b>時間（工程）</b><small>いつ・どの順番か</small></div>
+      <div class="eq-op">＝</div>
+      <div class="eq-item accent"><span class="ico3d">🎬</span><b>4D</b><small>建つ順番が見える</small></div>
+    </div>
+    <div class="two-col">
+      <div class="box ok"><b>3Dで分かること</b><ul><li>完成形の姿</li><li>部材の位置関係</li></ul></div>
+      <div class="box bad"><b>3Dだけでは分からない</b><ul><li>どの順で建つか</li><li>4月に何ができているか</li></ul></div>
+    </div>
+
+  </section>
+  <section class="slide " data-n="3">
+    <div class="s-head"><span class="s-no">03</span><h2>全体像：5つのステップ</h2></div>
+
+    <ol class="rail">
+      <li><span class="rn">1</span><div><b>取り込み</b><small>DXF ＋ 工程表CSV</small></div></li>
+      <li><span class="rn">2</span><div><b>工種の割り当て</b><small>レイヤごとに確認・確定</small></div></li>
+      <li><span class="rn">3</span><div><b>高さの付与</b><small>天端・底面・進行方向</small></div></li>
+      <li><span class="rn">4</span><div><b>3D生成</b><small>押し出して立体に</small></div></li>
+      <li><span class="rn">5</span><div><b>4D表示</b><small>再生・日付・視点</small></div></li>
+    </ol>
+    <p class="note">各画面の右上にある青いボタン（次のステップへ →）で進みます。</p>
+
+  </section>
+  <section class="slide " data-n="4">
+    <div class="s-head"><span class="s-no">04</span><h2>STEP 1　取り込み</h2></div>
+
+    <div class="shot">
+      <img src="../evidence/screens/01-import.png" alt="STEP 1　取り込みの画面">
+      <div class="shot-side">
+      <ul>
+        <li>DXF（施工計画図）と <b>工程表CSV</b> を置く</li>
+        <li>迷ったら <b>「サンプル図面で試す」</b>（架空の護岸工事）</li>
+        <li>取り込みは<b>ブラウザ内</b>。外部に送らない</li>
+      </ul>
+      <p class="callout">💡 図面要素・レイヤ・工程の件数が右上に出ます</p>
+</div>
+    </div>
+    <p class="note">対応形式：DXF / CSV（SXF・PDF・Excelは第2段階）</p>
+  </section>
+  <section class="slide " data-n="5">
+    <div class="s-head"><span class="s-no">05</span><h2>STEP 2　工種の割り当て</h2></div>
+
+    <div class="shot">
+      <img src="../evidence/screens/02-assign.png" alt="STEP 2　工種の割り当ての画面">
+      <div class="shot-side">
+      <ul>
+        <li>レイヤごとに「何の工事か」を確認</li>
+        <li><b>確からしさ</b>が目印</li>
+        <li>手で直すと<b>辞書に学習</b>される</li>
+      </ul>
+      <div class="conf">
+        <div><span class="pill ok">80%以上</span> まとめて確定してOK</div>
+        <div><span class="pill warn">50〜79%</span> 目で確認してから確定</div>
+        <div><span class="pill err">50%未満</span> 必ず手で選ぶ</div>
+      </div>
+</div>
+    </div>
+    <p class="note">未確定のまま進むと、その行は3D化されません</p>
+  </section>
+  <section class="slide " data-n="6">
+    <div class="s-head"><span class="s-no">06</span><h2>STEP 3　高さの付与</h2></div>
+
+    <div class="shot">
+      <img src="../evidence/screens/03-elevation.png" alt="STEP 3　高さの付与の画面">
+      <div class="shot-side">
+      <ul>
+        <li>断面図の標高注記が候補として並ぶ</li>
+        <li><b>「すべて反映」</b>で自動入力</li>
+        <li>足りない分だけ手入力</li>
+        <li>進行方向（伸ばす／据える／積む／即時）</li>
+      </ul>
+      <p class="callout">⚠️ 天端は底面より高く。100m超の差は入力ミス扱い</p>
+</div>
+    </div>
+    
+  </section>
+  <section class="slide " data-n="7">
+    <div class="s-head"><span class="s-no">07</span><h2>STEP 4　3D生成</h2></div>
+
+    <div class="shot">
+      <img src="../evidence/screens/04-generate.png" alt="STEP 4　3D生成の画面">
+      <div class="shot-side">
+      <ul>
+        <li>閉じた輪郭を<b>押し出して</b>立体に（方式A）</li>
+        <li>円は円柱に（係船柱など）</li>
+        <li>警告は「どのレイヤが、なぜ」まで出る</li>
+      </ul>
+      <p class="callout">✅ 警告を確認して問題なければ先へ進めます</p>
+</div>
+    </div>
+    
+  </section>
+  <section class="slide " data-n="8">
+    <div class="s-head"><span class="s-no">08</span><h2>STEP 5　4D表示</h2></div>
+
+    <div class="shot">
+      <img src="../evidence/screens/05-4d.png" alt="STEP 5　4D表示の画面">
+      <div class="shot-side">
+      <ul>
+        <li><b>再生</b>（スペースキー）で施工順に現れる</li>
+        <li>日付スライダー・←→キーで移動</li>
+        <li>視点：斜め／海側／上空／断面</li>
+        <li>ガントの棒をクリックでその日へ</li>
+      </ul>
+      <p class="callout">🎨 凡例クリックで工種を強調</p>
+</div>
+    </div>
+    
+  </section>
+  <section class="slide " data-n="9">
+    <div class="s-head"><span class="s-no">09</span><h2>保存と再開</h2></div>
+
+    <div class="shot">
+      <img src="../evidence/screens/06-save-dialog.png" alt="保存と再開の画面">
+      <div class="shot-side">
+      <ul>
+        <li>右上の<b>保存</b> → 案件コードと案件名</li>
+        <li>次回は<b>開く</b>から選ぶ</li>
+        <li>ブラウザ保存は約5MBまで</li>
+      </ul>
+      <p class="callout">☁️「API 接続」時はサーバにも保存（別端末で開ける）</p>
+</div>
+    </div>
+    
+  </section>
+  <section class="slide " data-n="10">
+    <div class="s-head"><span class="s-no">10</span><h2>使う場面 / 使わない場面</h2></div>
+
+    <div class="two-col">
+      <div class="box ok"><b>✅ 使う</b><ul>
+        <li>朝礼・安全朝礼での施工範囲の共有</li>
+        <li>協力会社との順番・重なりの確認</li>
+        <li>若手・新任への全体像の説明</li>
+        <li>発注者への進捗説明</li>
+      </ul></div>
+      <div class="box bad"><b>⚠️ 使わない</b><ul>
+        <li>数量の拾い出し（積算の代わり）</li>
+        <li>鉄筋の干渉チェック</li>
+        <li>完成形の最終確認（概略です）</li>
+        <li>実データ・社外秘の取り込み</li>
+      </ul></div>
+    </div>
+
+  </section>
+  <section class="slide " data-n="11">
+    <div class="s-head"><span class="s-no">11</span><h2>まとめ</h2></div>
+
+    <div class="cards3">
+      <div class="card"><div class="ic">1</div><b>順番が伝わる</b><p>完成形ではなく「過程」を共有できる</p></div>
+      <div class="card"><div class="ic">2</div><b>人が確定する</b><p>推定は下書き。緑以外は必ず目で確認</p></div>
+      <div class="card"><div class="ic">3</div><b>外に出さない</b><p>図面はブラウザ内。サンプルは架空</p></div>
+    </div>
+    <p class="final">🌐 https://d4d.mirai-dx-platform.com/</p>
+    <p class="note">演習：サンプル図面で「取り込み → 4D表示 → 保存」まで進めてみましょう</p>
+
+  </section>
+<div class="nav"><i id="bar"></i></div>
+<div class="counter" id="counter">1 / 12</div>
+<div class="hint">← → / スペースで進む</div>
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  slides.forEach((s, i) => {
+    const badge = s.querySelector('.s-no');
+    if (badge) badge.textContent = String(i + 1).padStart(2, '0');
+  });
+  let index = 0;
+  function show(next) {
+    index = Math.max(0, Math.min(slides.length - 1, next));
+    slides.forEach((s, i) => s.classList.toggle('active', i === index));
+    document.getElementById('counter').textContent = (index + 1) + ' / ' + slides.length;
+    document.getElementById('bar').style.width = ((index + 1) / slides.length) * 100 + '%';
+  }
+  document.addEventListener('keydown', (e) => {
+    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { e.preventDefault(); show(index + 1); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); show(index - 1); }
+    if (e.key === 'Home') { show(0); }
+    if (e.key === 'End') { show(slides.length - 1); }
+  });
+  document.addEventListener('click', () => show(index + 1));
+  show(0);
+</script>
+</body>
+</html>

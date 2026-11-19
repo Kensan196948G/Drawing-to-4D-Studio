@@ -30,6 +30,12 @@
   --r-sm: 8px;
   --r-md: 12px;
   --r-pill: 999px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-1: 140ms;
+  --dur-2: 240ms;
+  --dur-3: 420ms;
 }
 
 html[data-theme="dark"] {
@@ -106,14 +112,31 @@ svg.i { width: 16px; height: 16px; flex: none; }
 }
 .kpis { display: flex; gap: 18px; margin-left: auto; }
 .kpi { text-align: right; min-width: 54px; }
-.kpi span { display: block; font-size: 10px; color: var(--mute); }
-.kpi b { display: block; font-family: var(--mono); font-size: 16px; line-height: 1.2; }
+.kpi .kpi-label {
+  display: flex; align-items: center; justify-content: flex-end; gap: 3px;
+  font-size: 10px; color: var(--mute); line-height: 1.3;
+}
+.kpi .kpi-label .i { width: 11px; height: 11px; opacity: 0.75; }
+.kpi b {
+  display: block; font-family: var(--mono); font-size: 16px; line-height: 1.2;
+  transition: color var(--dur-2) var(--ease);
+}
+.kpi b.bump { animation: kpi-bump 640ms var(--ease-spring); }
 .kpi.warn b { color: var(--amber); }
+.kpi.warn b.bump { animation: kpi-bump-warn 640ms var(--ease-spring); }
 .top-actions { display: flex; align-items: center; gap: 6px; margin-left: 12px; }
 .api-status {
+  display: inline-flex; align-items: center; gap: 5px;
   font-size: 10.5px; color: var(--mute); border: 1px solid var(--line);
-  border-radius: var(--r-pill); padding: 2px 8px; white-space: nowrap;
+  border-radius: var(--r-pill); padding: 2px 9px 2px 7px; white-space: nowrap;
+  transition: color var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), background var(--dur-2) var(--ease);
 }
+.api-status .dot {
+  width: 7px; height: 7px; border-radius: 50%; background: var(--mute); flex: none;
+  transition: background var(--dur-2) var(--ease);
+}
+.api-status[data-state="online"] .dot { background: var(--green); animation: dot-pulse 2.4s var(--ease) infinite; }
+.api-status[data-state="offline"] .dot { background: var(--amber); }
 .api-status[data-state="online"] { color: var(--green); border-color: var(--green); background: var(--green-bg); }
 .api-status[data-state="offline"] { color: var(--amber); border-color: var(--amber); background: var(--amber-bg); }
 
@@ -124,22 +147,48 @@ svg.i { width: 16px; height: 16px; flex: none; }
   padding: 18px 14px; position: sticky; top: 57px; align-self: start;
   height: calc(100vh - 57px); overflow: auto;
 }
-.steps h2 { font-size: 10px; letter-spacing: 0.08em; color: var(--mute); margin: 0 0 8px 6px; text-transform: uppercase; }
+.steps h2 { font-size: 10px; letter-spacing: 0.08em; color: var(--mute); margin: 10px 0 8px 6px; text-transform: uppercase; }
+.step-progress { padding: 4px 6px 2px; }
+.step-progress .sp-bar {
+  height: 5px; border-radius: 3px; background: var(--paper2); overflow: hidden;
+  border: 1px solid var(--line);
+}
+.step-progress .sp-bar i {
+  display: block; height: 100%; width: 0; border-radius: 3px;
+  background: linear-gradient(90deg, var(--navy), var(--green));
+  transition: width var(--dur-3) var(--ease-out);
+}
+.step-progress .sp-label {
+  display: block; margin-top: 4px; font-size: 10px; color: var(--mute); text-align: right;
+  font-family: var(--mono);
+}
 .step {
+  position: relative; overflow: hidden;
   display: flex; align-items: center; gap: 8px;
   width: 100%; text-align: left; border: 0; background: transparent;
   padding: 8px; border-radius: var(--r-sm); cursor: pointer; color: var(--sub);
   font-size: 12.5px; margin-bottom: 2px;
+  transition: background var(--dur-1) var(--ease), color var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
 }
-.step:hover { background: var(--paper2); color: var(--ink); }
+.step:hover { background: var(--paper2); color: var(--ink); transform: translateX(2px); }
 .step.active { background: var(--navy-bg); color: var(--navy); font-weight: 700; }
-.step.locked { color: var(--mute); cursor: not-allowed; }
-.step .num {
-  width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line2);
-  display: grid; place-items: center; font-size: 10px; flex: none; font-family: var(--mono);
+.step.active::before {
+  content: ''; position: absolute; left: 0; top: 6px; bottom: 6px; width: 3px;
+  border-radius: 0 3px 3px 0; background: var(--navy);
+  animation: rail-in var(--dur-2) var(--ease-out);
 }
-.step.done .num { background: var(--green); border-color: var(--green); color: #fff; }
-.step.active .num { border-color: var(--navy); }
+.step.locked { color: var(--mute); cursor: not-allowed; }
+.step.locked:hover { transform: none; }
+.step .num {
+  width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line2);
+  display: grid; place-items: center; flex: none; color: var(--sub);
+  transition: background var(--dur-2) var(--ease), border-color var(--dur-2) var(--ease), color var(--dur-2) var(--ease), transform var(--dur-2) var(--ease-spring);
+}
+.step .num svg { width: 13px; height: 13px; }
+.step:hover .num { transform: scale(1.08); }
+.step.done .num { background: var(--green); border-color: var(--green); color: #fff; animation: pop var(--dur-3) var(--ease-spring); }
+.step.active .num { border-color: var(--navy); color: var(--navy); background: var(--paper); box-shadow: 0 0 0 3px color-mix(in srgb, var(--navy) 16%, transparent); }
+.step.locked .num { opacity: 0.6; }
 .step .state-dot { width: 6px; height: 6px; border-radius: 50%; margin-left: auto; background: var(--amber); }
 .step .state-dot.ok { background: var(--green); }
 .steps .foot {
@@ -177,13 +226,18 @@ main { padding: 22px 26px 64px; max-width: 1240px; width: 100%; margin: 0 auto; 
 
 /* ---------- buttons / pills ---------- */
 .btn {
+  position: relative; overflow: hidden;
   display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   border: 1px solid var(--line2); background: var(--paper); color: var(--ink);
   border-radius: var(--r-sm); padding: 7px 13px; cursor: pointer; font-size: 12.5px;
   white-space: nowrap; text-decoration: none;
+  transition: border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease), background var(--dur-1) var(--ease), transform var(--dur-1) var(--ease), box-shadow var(--dur-2) var(--ease);
 }
-.btn:hover { border-color: var(--navy); color: var(--navy); }
-.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn:hover { border-color: var(--navy); color: var(--navy); transform: translateY(-1px); box-shadow: 0 2px 8px rgba(16, 41, 63, 0.09); }
+.btn:active { transform: translateY(0); box-shadow: none; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn svg.i { transition: transform var(--dur-2) var(--ease); }
+.btn:hover svg.i { transform: translateX(1px); }
 .btn.p { background: var(--navy); border-color: var(--navy); color: #fff; }
 .btn.p:hover { filter: brightness(1.08); color: #fff; }
 .btn.s { padding: 5px 9px; font-size: 12px; }
@@ -218,14 +272,17 @@ main { padding: 22px 26px 64px; max-width: 1240px; width: 100%; margin: 0 auto; 
   background: var(--paper2); padding: 26px 20px; text-align: center;
   transition: border-color 0.15s, background 0.15s;
 }
-.dropzone.over { border-color: var(--acc); background: var(--acc-bg); }
-.dropzone .big { width: 34px; height: 34px; color: var(--navy); margin-bottom: 6px; }
+.dropzone { transition: border-color var(--dur-2) var(--ease), background var(--dur-2) var(--ease), transform var(--dur-2) var(--ease); }
+.dropzone.over { border-color: var(--acc); background: var(--acc-bg); transform: scale(1.01); }
+.dropzone.over .big { animation: none; }
+.dropzone .big { width: 34px; height: 34px; color: var(--navy); margin-bottom: 6px; animation: float-y 3s var(--ease) infinite; }
 .dropzone b { display: block; font-size: 13.5px; }
 .dropzone .sub { color: var(--mute); font-size: 11.5px; }
 .dropzone .row { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
 .formats { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 6px; margin-top: 12px; }
 .format { border: 1px solid var(--line); background: var(--paper); border-radius: var(--r-sm); padding: 7px 8px; font-size: 11px; }
-.format b { display: block; font-size: 12px; }
+.format b { display: flex; align-items: center; gap: 4px; font-size: 12px; }
+.format b svg { width: 12px; height: 12px; color: var(--navy); flex: none; }
 .format .tag { margin-bottom: 3px; display: inline-block; }
 .tag.green { background: var(--green-bg); color: var(--green); border-color: transparent; }
 .tag.navy { background: var(--navy-bg); color: var(--navy); border-color: transparent; }
@@ -291,6 +348,13 @@ input:disabled, select:disabled { background: var(--paper2); color: var(--mute);
   border: 1px dashed var(--line2); border-radius: var(--r-md); background: var(--paper2);
 }
 .empty b { display: block; color: var(--sub); margin-bottom: 3px; }
+.empty .empty-ico {
+  width: 52px; height: 52px; margin: 0 auto 10px; border-radius: 14px;
+  display: grid; place-items: center; color: var(--navy);
+  background: var(--navy-bg); animation: float-y 3.2s var(--ease) infinite;
+}
+.empty .empty-ico svg { width: 26px; height: 26px; }
+.empty .empty-actions { margin-top: 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
 .loading { display: flex; align-items: center; gap: 9px; color: var(--sub); padding: 18px; }
 .spinner {
   width: 16px; height: 16px; border: 2px solid var(--line2); border-top-color: var(--navy);
@@ -374,10 +438,22 @@ input:disabled, select:disabled { background: var(--paper2); color: var(--mute);
 .case-item small { color: var(--mute); font-size: 10.5px; }
 .case-item .ci-actions { display: flex; gap: 4px; }
 .toast {
-  position: fixed; right: 20px; bottom: 20px; z-index: 60; max-width: min(420px, 92vw);
-  background: var(--ink); color: var(--paper); padding: 9px 14px; border-radius: var(--r-sm);
-  font-size: 12px; box-shadow: var(--shadow);
+  position: fixed; right: 20px; bottom: 20px; z-index: 60; max-width: min(440px, 92vw);
+  display: flex; align-items: flex-start; gap: 9px;
+  background: var(--ink); color: var(--paper); padding: 11px 14px; border-radius: var(--r-md);
+  font-size: 12px; box-shadow: var(--shadow); overflow: hidden;
+  opacity: 0; transform: translateY(10px) scale(0.98);
+  transition: opacity var(--dur-2) var(--ease-out), transform var(--dur-2) var(--ease-out);
 }
+.toast[data-show] { opacity: 1; transform: none; }
+.toast .toast-ico { display: grid; place-items: center; flex: none; margin-top: 1px; }
+.toast .toast-ico svg { width: 17px; height: 17px; }
+.toast .toast-msg { flex: 1; min-width: 0; }
+.toast .toast-bar {
+  position: absolute; left: 0; bottom: 0; height: 2px; width: 100%;
+  background: currentColor; opacity: 0.45; transform-origin: left;
+}
+.toast[data-show] .toast-bar { animation: toast-countdown 4.5s linear forwards; }
 .toast.ok { background: var(--green); color: #fff; }
 .toast.warn { background: var(--amber); color: #fff; }
 .toast.err { background: var(--red); color: #fff; }
@@ -413,4 +489,178 @@ input:disabled, select:disabled { background: var(--paper2); color: var(--mute);
   .layout { display: block; }
   main { padding: 0; }
   .card { box-shadow: none; break-inside: avoid; }
+}
+
+/* ==========================================================================
+   分かりやすさのための表示強化（アイコン・動き）
+   目的は装飾ではなく「いま何が起きたか／次に何をするか」を伝えること。
+   動きは prefers-reduced-motion で無効化される。
+   ========================================================================== */
+
+/* ---------- keyframes ---------- */
+@keyframes view-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes kpi-bump {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.16); color: var(--navy); }
+  100% { transform: scale(1); }
+}
+@keyframes kpi-bump-warn {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.16); color: var(--amber); }
+  100% { transform: scale(1); }
+}
+@keyframes dot-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--green) 55%, transparent); }
+  50% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--green) 0%, transparent); }
+}
+@keyframes rail-in {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0.4; }
+  60% { transform: scale(1.12); opacity: 1; }
+  100% { transform: scale(1); }
+}
+@keyframes ripple-out {
+  from { transform: scale(0); opacity: 0.35; }
+  to { transform: scale(1); opacity: 0; }
+}
+@keyframes toast-countdown {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+@keyframes shimmer {
+  from { background-position: -220px 0; }
+  to { background-position: 220px 0; }
+}
+@keyframes grow-x {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes now-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--acc) 50%, transparent); }
+  50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--acc) 0%, transparent); }
+}
+
+/* ---------- 画面の入場（ステップが変わったときだけ） ---------- */
+.view[data-enter] { animation: view-in var(--dur-3) var(--ease-out) both; }
+.view[data-enter] .card { animation: card-in var(--dur-3) var(--ease-out) both; }
+.view[data-enter] .card:nth-child(1) { animation-delay: 40ms; }
+.view[data-enter] .card:nth-child(2) { animation-delay: 90ms; }
+.view[data-enter] .card:nth-child(3) { animation-delay: 140ms; }
+.view[data-enter] .card:nth-child(4) { animation-delay: 190ms; }
+.view[data-enter] .stat { animation: card-in var(--dur-2) var(--ease-out) both; }
+.view[data-enter] .stat:nth-child(2) { animation-delay: 50ms; }
+.view[data-enter] .stat:nth-child(3) { animation-delay: 100ms; }
+.view[data-enter] .stat:nth-child(4) { animation-delay: 150ms; }
+
+/* ---------- 押した手応え ---------- */
+.ripple {
+  position: absolute; border-radius: 50%; pointer-events: none;
+  background: currentColor; opacity: 0; transform: scale(0);
+  animation: ripple-out 600ms var(--ease-out) forwards;
+}
+.legend-item, .part-item { position: relative; overflow: hidden; }
+
+/* ---------- カード・見出し ---------- */
+.card { transition: border-color var(--dur-2) var(--ease), box-shadow var(--dur-2) var(--ease); }
+.card:hover { border-color: var(--line2); }
+.view-head .hi { transition: transform var(--dur-3) var(--ease-spring); }
+.view-head .hi:hover { transform: rotate(-4deg) scale(1.04); }
+.view-head .hi svg { width: 20px; height: 20px; }
+.card-head svg.i { width: 15px; height: 15px; }
+
+/* ステップの進み具合を作業画面の先頭にも出す */
+.view-steps {
+  display: flex; align-items: center; gap: 10px;
+  margin: -6px 0 16px; font-size: 10.5px; color: var(--mute);
+}
+.view-steps .vs-bar { flex: 1; height: 4px; border-radius: 2px; background: var(--paper2); overflow: hidden; border: 1px solid var(--line); }
+.view-steps .vs-bar i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--navy), var(--green)); transition: width var(--dur-3) var(--ease-out); }
+.view-steps .vs-label { font-family: var(--mono); white-space: nowrap; }
+
+/* ---------- 数値・状態の可視化 ---------- */
+.stat { position: relative; }
+.stat .stat-ico { position: absolute; right: 7px; top: 7px; color: var(--mute); opacity: 0.55; }
+.stat .stat-ico svg { width: 13px; height: 13px; }
+.stat small { display: flex; align-items: center; gap: 3px; }
+
+.conf { display: inline-flex; align-items: center; gap: 6px; }
+.conf .conf-track { width: 46px; height: 5px; border-radius: 3px; background: var(--paper2); border: 1px solid var(--line); overflow: hidden; }
+.conf .conf-fill { display: block; height: 100%; border-radius: 3px; transform-origin: left; animation: grow-x var(--dur-3) var(--ease-out); }
+.conf .conf-fill.ok { background: var(--green); }
+.conf .conf-fill.warn { background: var(--amber); }
+.conf .conf-fill.err { background: var(--red); }
+
+.pill svg.i { width: 11px; height: 11px; }
+
+/* ---------- 空・読み込み ---------- */
+.loading { position: relative; }
+.loading::after {
+  content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--navy), transparent);
+  background-size: 220px 100%; animation: shimmer 1.4s linear infinite; opacity: 0.5;
+}
+.spinner { box-shadow: 0 0 0 3px color-mix(in srgb, var(--navy) 8%, transparent); }
+
+/* ---------- 表 ---------- */
+table.data tbody tr { transition: background var(--dur-2) var(--ease); }
+table.data tbody tr.highlight { box-shadow: inset 3px 0 0 var(--acc); }
+
+/* ---------- 3D / 4D ---------- */
+.stage { animation: fade-in var(--dur-3) var(--ease-out) both; }
+.gantt-bar { transform-origin: left; animation: grow-x var(--dur-3) var(--ease-out) both; }
+.gantt-now { animation: now-pulse 2.2s var(--ease) infinite; }
+.tl-date { transition: color var(--dur-1) var(--ease); }
+.tl-date.bump { animation: pop var(--dur-2) var(--ease-spring); }
+.timeline .btn.p[data-playing='true'] svg { animation: pop var(--dur-2) var(--ease-spring); }
+.part-item, .legend-item { transition: background var(--dur-1) var(--ease), color var(--dur-1) var(--ease), transform var(--dur-1) var(--ease); }
+.part-item:hover, .legend-item:hover { transform: translateX(1px); }
+
+/* ---------- ダイアログ ---------- */
+.dlg { animation: dlg-in var(--dur-2) var(--ease-out) both; }
+@keyframes dlg-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+.dlg::backdrop { animation: fade-in var(--dur-2) var(--ease-out) both; }
+.dlg-title { display: flex; align-items: center; gap: 9px; margin-bottom: 4px; }
+.dlg-title h2 { margin: 0; }
+.dlg-ico {
+  width: 28px; height: 28px; border-radius: 8px; flex: none;
+  display: grid; place-items: center; background: var(--navy-bg); color: var(--navy);
+}
+.dlg-ico.warn { background: var(--amber-bg); color: var(--amber); }
+.dlg-ico svg { width: 16px; height: 16px; }
+.dlg-head .dlg-ico { margin-top: 1px; }
+
+/* ---------- テーマ切替アイコン ---------- */
+#btn-theme .theme-icon { transition: transform var(--dur-3) var(--ease-spring); }
+#btn-theme:hover .theme-icon { transform: rotate(18deg); }
+
+/* ---------- 案件リスト ---------- */
+.case-item { transition: border-color var(--dur-2) var(--ease), background var(--dur-2) var(--ease), transform var(--dur-2) var(--ease); }
+.case-item:hover { border-color: var(--navy); background: var(--paper); transform: translateY(-1px); }
+
+/* ---------- 端末幅 ---------- */
+@media (max-width: 980px) {
+  .step-progress { display: none; }
+  .step.active::before { display: none; }
+  .view-steps { margin-top: 0; }
 }

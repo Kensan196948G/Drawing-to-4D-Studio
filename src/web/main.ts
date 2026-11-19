@@ -19,9 +19,10 @@ import {
   saveLocalCase,
   updateLocalCaseParts,
 } from './storage.js';
+import { animateNumber, enterView, installRipple } from './motion.js';
 import { confirmedWorkTypeCount, createState, pendingCount, saveDictionary, saveTheme } from './state.js';
 import type { AppState, Step } from './types.js';
-import { escapeHtml, fmtDateTime } from './ui.js';
+import { escapeHtml, fmtDateTime, icon } from './ui.js';
 
 const STEP_LABELS: Record<Step, string> = {
   1: '取り込み',
@@ -29,6 +30,21 @@ const STEP_LABELS: Record<Step, string> = {
   3: '高さの付与',
   4: '3D生成',
   5: '4D表示',
+};
+
+/** ステップの意味が一目で分かるアイコン。番号だけより速く目的に辿り着ける。 */
+const STEP_ICONS: Record<Step, string> = {
+  1: 'upload',
+  2: 'layers',
+  3: 'ruler',
+  4: 'cube',
+  5: 'play',
+};
+
+const TOAST_ICONS: Record<'ok' | 'warn' | 'err', string> = {
+  ok: 'check-circle',
+  warn: 'alert',
+  err: 'alert',
 };
 
 class App {
@@ -39,6 +55,7 @@ class App {
   private cleanup: (() => void) | null = null;
   private toastTimer: number | undefined;
   private confirmAction: (() => void) | null = null;
+  private lastRenderedStep: Step | null = null;
   private readonly ctx: AppContext;
 
   constructor() {
@@ -67,6 +84,7 @@ class App {
 
   init(): void {
     this.applyTheme();
+    installRipple();
     this.bindShell();
     const initial = parseHashStep();
     if (initial && this.canGo(initial)) this.state.step = initial;
@@ -131,26 +149,44 @@ class App {
       this.cleanup();
       this.cleanup = null;
     }
+    const stepChanged = this.lastRenderedStep !== this.state.step;
     this.renderHeader();
     this.renderNav();
     const screen = screenFor(this.state.step);
-    this.main.innerHTML = screen.render(this.ctx);
+    this.main.innerHTML = this.renderStepStrip() + screen.render(this.ctx);
     screen.mount(this.ctx, this.main);
-    this.main.focus({ preventScroll: true });
+    if (stepChanged) {
+      enterView(this.main);
+      this.main.focus({ preventScroll: true });
+    }
+    this.lastRenderedStep = this.state.step;
+  }
+
+  /** 作業画面の先頭に「何番目の何をしているか」を出す。左のナビを見なくても現在地が分かる。 */
+  private renderStepStrip(): string {
+    const step = this.state.step;
+    return `<div class="view-steps">
+      <span class="vs-label">STEP ${step} / 5</span>
+      <div class="vs-bar" role="progressbar" aria-valuemin="1" aria-valuemax="5" aria-valuenow="${step}" aria-label="作業の進捗"><i style="width:${(step / 5) * 100}%"></i></div>
+    </div>`;
   }
 
   private renderHeader(): void {
     const { state } = this;
-    setText('#kpi-entities', String(state.drawing?.entities.length ?? 0));
-    setText('#kpi-worktypes', String(confirmedWorkTypeCount(state)));
-    setText('#kpi-parts', String(state.parts.length));
-    setText('#kpi-rows', String(state.schedule?.rows.length ?? 0));
-    setText('#kpi-pending', String(pendingCount(state)));
+    setKpi('#kpi-entities', state.drawing?.entities.length ?? 0);
+    setKpi('#kpi-worktypes', confirmedWorkTypeCount(state));
+    setKpi('#kpi-parts', state.parts.length);
+    setKpi('#kpi-rows', state.schedule?.rows.length ?? 0);
+    setKpi('#kpi-pending', pendingCount(state));
+    this.syncThemeIcon();
     const api = document.querySelector<HTMLElement>('#api-status');
+    const apiLabel = document.querySelector<HTMLElement>('#api-status-label');
+    if (apiLabel) {
+      apiLabel.textContent =
+        state.api === 'online' ? 'API 接続' : state.api === 'offline' ? 'オフライン' : 'API 確認中';
+    }
     if (api) {
       api.dataset.state = state.api;
-      api.textContent =
-        state.api === 'online' ? 'API 接続' : state.api === 'offline' ? 'オフライン' : 'API 確認中';
       api.title =
         state.api === 'online'
           ? 'サーバに接続しています。保存時にサーバへも保存できます。'
@@ -172,25 +208,49 @@ class App {
     const { state } = this;
     const pending = pendingCount(state);
     const elevationErrors = validateElevations(state.elevations).length;
+    const enabledElevations = state.elevations.filter((entry) => entry.enabled).length;
+    // 完了は「順番に積み上がる」ものとして扱う。後ろの工程だけが先に完了扱いになると誤解を招く。
+    const achieved: Record<Step, boolean> = {
+      1: Boolean(state.drawing),
+      2: Boolean(state.drawing) && state.assignments.length > 0 && pending === 0,
+      3: Boolean(state.drawing) && enabledElevations > 0 && elevationErrors === 0,
+      4: state.parts.length > 0,
+      5: state.parts.length > 0 && state.schedule !== null,
+    };
+    const completion = {} as Record<Step, boolean>;
+    let chain = true;
+    for (const step of [1, 2, 3, 4, 5] as Step[]) {
+      chain = chain && achieved[step];
+      completion[step] = chain;
+    }
+    const doneCount = ([1, 2, 3, 4, 5] as Step[]).filter((step) => completion[step]).length;
+    const progressPct = Math.round((doneCount / 5) * 100);
     const steps = ([1, 2, 3, 4, 5] as Step[]).map((step) => {
       const active = state.step === step;
       const locked = !this.canGo(step);
-      const done = state.step > step && this.canGo(step);
-      const dot =
+      // いま開いているステップは「完了」ではなく「現在地」として見せる。
+      const done = !active && completion[step];
+      const warning =
         step === 2 && pending > 0
-          ? '<span class="state-dot" title="未確定あり"></span>'
+          ? `未確定の工種が ${pending} 件あります`
           : step === 3 && elevationErrors > 0
-            ? '<span class="state-dot" title="標高の不整合"></span>'
+            ? `標高の不整合が ${elevationErrors} 件あります`
             : step === 4 && state.buildWarnings.length > 0
-              ? '<span class="state-dot" title="生成警告あり"></span>'
-              : done
-                ? '<span class="state-dot ok"></span>'
-                : '';
-      return `<button class="step ${active ? 'active' : ''} ${done ? 'done' : ''} ${locked ? 'locked' : ''}" type="button" data-step="${step}" data-testid="step-${step}" ${locked ? 'aria-disabled="true"' : ''}>
-        <span class="num">${done ? '✓' : step}</span><span>${step} ${STEP_LABELS[step]}</span>${dot}
+              ? `生成警告が ${state.buildWarnings.length} 件あります`
+              : '';
+      const current = active ? ' aria-current="step"' : '';
+      const disable = locked ? ' aria-disabled="true"' : current;
+      return `<button class="step ${active ? 'active' : ''} ${done ? 'done' : ''} ${locked ? 'locked' : ''}" type="button" data-step="${step}" data-testid="step-${step}"${disable}>
+        <span class="num">${done ? icon('check') : icon(STEP_ICONS[step])}</span>
+        <span class="label">${step} ${STEP_LABELS[step]}</span>
+        ${warning ? `<span class="state-dot" title="${warning}" aria-label="${warning}"></span>` : ''}
       </button>`;
     });
-    this.nav.innerHTML = `<h2>作業のステップ</h2>${steps.join('')}<div class="foot"><b>第1段階（Phase 1）</b><br>DXFと工程表CSVを読み込み、工種と高さを確認して4D表示まで。工種の推定はキーワード辞書で行います。</div>`;
+    this.nav.innerHTML = `<div class="step-progress" title="完了したステップ: ${doneCount} / 5">
+        <div class="sp-bar"><i style="width:${progressPct}%"></i></div>
+        <span class="sp-label">${doneCount} / 5 完了</span>
+      </div>
+      <h2>作業のステップ</h2>${steps.join('')}<div class="foot"><b>第1段階（Phase 1）</b><br>DXFと工程表CSVを読み込み、工種と高さを確認して4D表示まで。工種の推定はキーワード辞書で行います。</div>`;
     this.nav.querySelectorAll<HTMLButtonElement>('[data-step]').forEach((button) => {
       button.addEventListener('click', () => {
         const step = Number.parseInt(button.dataset.step ?? '', 10) as Step;
@@ -246,11 +306,24 @@ class App {
     if (!element) return;
     window.clearTimeout(this.toastTimer);
     element.className = `toast ${kind}`;
-    element.textContent = message;
+    element.innerHTML = `<span class="toast-ico">${icon(TOAST_ICONS[kind])}</span><span class="toast-msg">${escapeHtml(message)}</span><span class="toast-bar" aria-hidden="true"></span>`;
     element.hidden = false;
+    window.requestAnimationFrame(() => element.setAttribute('data-show', ''));
     this.toastTimer = window.setTimeout(() => {
-      element.hidden = true;
+      element.removeAttribute('data-show');
+      window.setTimeout(() => {
+        element.hidden = true;
+      }, 160);
     }, 4500);
+  }
+
+  private syncThemeIcon(): void {
+    const use = document.querySelector<SVGUseElement>('#btn-theme use');
+    const dark = this.state.theme === 'dark';
+    use?.setAttribute('href', dark ? '#i-moon' : '#i-sun');
+    document
+      .querySelector('#btn-theme')
+      ?.setAttribute('aria-label', dark ? '明るい表示に切り替える' : '暗い表示に切り替える');
   }
 
   private openConfirm(options: ConfirmOptions): void {
@@ -358,7 +431,9 @@ class App {
         const name = localCase?.name ?? remoteCase?.name ?? code;
         const updated = localCase?.updatedAt ?? remoteCase?.updatedAt ?? '';
         const parts = localCase?.parts ? `${localCase.parts} 部材` : '';
-        const badge = remoteCase ? '<span class="pill info">サーバ</span>' : '<span class="pill mute">ブラウザ</span>';
+        const badge = remoteCase
+          ? '<span class="pill info">サーバ</span>'
+          : '<span class="pill mute">ブラウザ</span>';
         return `<div class="case-item">
           <div class="ci-main">
             <b>${escapeHtml(name)}</b>
@@ -509,6 +584,18 @@ function parseHashStep(): Step | null {
 function setText(selector: string, text: string): void {
   const element = document.querySelector<HTMLElement>(selector);
   if (element) element.textContent = text;
+}
+
+function setKpi(selector: string, value: number): void {
+  const element = document.querySelector<HTMLElement>(selector);
+  if (!element) return;
+  const previous = Number.parseInt(element.dataset.value ?? element.textContent ?? '0', 10);
+  if (previous === value) {
+    element.textContent = String(value);
+    element.dataset.value = String(value);
+    return;
+  }
+  animateNumber(element, value);
 }
 
 function mergeDictionaries(

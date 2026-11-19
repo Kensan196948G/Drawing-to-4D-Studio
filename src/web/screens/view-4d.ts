@@ -16,10 +16,10 @@ const VIEW_LABELS: Record<ViewPreset, string> = {
 export function renderView4d(ctx: AppContext): string {
   const { state } = ctx;
   if (!state.drawing || state.parts.length === 0) {
-    return `<section class="view"><div class="empty"><b>3D部材がありません</b>SCR-04で3Dを生成してください。<div style="margin-top:10px"><button class="btn" type="button" data-action="back">3D生成へ戻る</button></div></div></section>`;
+    return `<section class="view"><div class="empty"><span class="empty-ico">${icon('cube')}</span><b>3D部材がありません</b>SCR-04で3Dを生成してください。<div class="empty-actions"><button class="btn" type="button" data-action="back">${icon('arrow')}3D生成へ戻る</button></div></div></section>`;
   }
   if (!state.schedule) {
-    return `<section class="view"><div class="empty"><b>工程表がありません</b>4D再生には工程表CSVが必要です。SCR-01で読み込んでください。<div style="margin-top:10px"><button class="btn" type="button" data-action="back">SCR-01へ戻る</button></div></div></section>`;
+    return `<section class="view"><div class="empty"><span class="empty-ico">${icon('calendar')}</span><b>工程表がありません</b>4D再生には工程表CSVが必要です。SCR-01で読み込んでください。<div class="empty-actions"><button class="btn" type="button" data-action="back">${icon('arrow')}SCR-01へ戻る</button></div></div></section>`;
   }
   const timeline = state.timeline ?? makeTimeline(state.schedule.rows);
   const totalDays = Math.max(1, diffDays(timeline.start, timeline.end));
@@ -57,7 +57,7 @@ export function renderView4d(ctx: AppContext): string {
 
         <div class="timeline" data-timeline>
           <div class="tl-row">
-            <button class="btn p" type="button" data-action="play" data-testid="play" aria-label="再生">
+            <button class="btn p" type="button" data-action="play" data-testid="play" data-playing="false" aria-label="再生">
               <svg class="i" aria-hidden="true"><use href="#i-play"></use></svg><span data-play-label>再生</span>
             </button>
             <div>
@@ -73,8 +73,16 @@ export function renderView4d(ctx: AppContext): string {
           <div class="gantt" data-gantt data-testid="gantt">
             ${sortedRows
               .map((row) => {
-                const left = clamp(((row.start - timeline.start) / (timeline.end - timeline.start)) * 100, 0, 100);
-                const width = clamp(((row.end - row.start) / (timeline.end - timeline.start)) * 100, 0.4, 100 - left);
+                const left = clamp(
+                  ((row.start - timeline.start) / (timeline.end - timeline.start)) * 100,
+                  0,
+                  100,
+                );
+                const width = clamp(
+                  ((row.end - row.start) / (timeline.end - timeline.start)) * 100,
+                  0.4,
+                  100 - left,
+                );
                 const workType = row.code ? workTypeByCode(row.code) : undefined;
                 const color = workType?.color ?? '#6b7f8f';
                 return `<div class="gantt-row" data-gantt-start="${row.start}">
@@ -124,7 +132,7 @@ export function renderView4d(ctx: AppContext): string {
         </div>
 
         <div class="card">
-          <div class="card-head">${icon('alert')}確認</div>
+          <div class="card-head">${icon('info')}操作のヒント</div>
           <div class="card-body" style="font-size:11.5px;color:var(--sub)">
             ${state.buildWarnings.length > 0 ? `<div class="warn" style="margin-bottom:8px">${icon('alert')}<div>${state.buildWarnings.length} 件の生成警告があります（SCR-04で確認）。</div></div>` : ''}
             ${unmatched.unmatchedCodes.length > 0 ? `<div class="warn" style="margin-bottom:8px">${icon('alert')}<div>工程表と対応しない工種: ${unmatched.unmatchedCodes.join('、')}</div></div>` : ''}
@@ -175,17 +183,29 @@ export function mountView4d(ctx: AppContext, root: HTMLElement): void {
 
   const update = () => {
     const day = clamp(diffDays(timeline.start, state.currentDate), 0, totalDays);
-    if (dateEl) dateEl.textContent = fmtDate(state.currentDate);
+    if (dateEl) {
+      dateEl.textContent = fmtDate(state.currentDate);
+      dateEl.classList.remove('bump');
+      void dateEl.offsetWidth;
+      dateEl.classList.add('bump');
+    }
     if (slider) slider.value = String(day);
     if (dateInput) dateInput.value = fmtDateInput(state.currentDate);
     if (nowLine) nowLine.style.left = `${(day / totalDays) * 100}%`;
-    const progress: PartProgress[] = computePartProgress(state.parts, state.schedule?.rows ?? [], state.currentDate);
+    const progress: PartProgress[] = computePartProgress(
+      state.parts,
+      state.schedule?.rows ?? [],
+      state.currentDate,
+    );
     scene?.update(progress);
   };
 
   const setPlaying = (playing: boolean) => {
     state.playing = playing;
-    if (playButton) playButton.setAttribute('aria-label', playing ? '停止' : '再生');
+    if (playButton) {
+      playButton.setAttribute('aria-label', playing ? '停止' : '再生');
+      playButton.setAttribute('data-playing', playing ? 'true' : 'false');
+    }
     if (playLabel) playLabel.textContent = playing ? '停止' : '再生';
     const use = playButton?.querySelector('use');
     use?.setAttribute('href', playing ? '#i-pause' : '#i-play');
@@ -226,7 +246,9 @@ export function mountView4d(ctx: AppContext, root: HTMLElement): void {
   });
   root.querySelector<HTMLSelectElement>('[data-testid="speed"]')?.addEventListener('change', (event) => {
     const value = Number.parseInt((event.target as HTMLSelectElement).value, 10);
-    state.speed = (value === 1 || value === 2 || value === 7 || value === 30 ? value : 7) as typeof state.speed;
+    state.speed = (
+      value === 1 || value === 2 || value === 7 || value === 30 ? value : 7
+    ) as typeof state.speed;
   });
 
   root.querySelectorAll<HTMLButtonElement>('[data-view]').forEach((button) => {

@@ -15,7 +15,7 @@ const VIEW_LABELS: Record<ViewPreset, string> = {
 export function renderGenerate(ctx: AppContext): string {
   const { state } = ctx;
   if (!state.drawing) {
-    return `<section class="view"><div class="empty"><b>図面がありません</b>先にSCR-01でDXFを読み込んでください。<div style="margin-top:10px"><button class="btn" type="button" data-action="back">SCR-01へ戻る</button></div></div></section>`;
+    return `<section class="view"><div class="empty"><span class="empty-ico">${icon('upload')}</span><b>図面がありません</b>先にSCR-01でDXFを読み込んでください。<div class="empty-actions"><button class="btn" type="button" data-action="back">${icon('arrow')}SCR-01へ戻る</button></div></div></section>`;
   }
   const counts = countByWorkType(state.parts);
   const hasParts = state.parts.length > 0;
@@ -49,8 +49,8 @@ export function renderGenerate(ctx: AppContext): string {
                      <div class="stat"><small>工程対応</small><b>${state.buildUnmatched.length === 0 ? 'OK' : `${state.buildUnmatched.length} 未対応`}</b></div>
                    </div>
                    <div style="margin-top:10px"><button class="btn" type="button" data-action="generate">${icon('refresh')}再生成</button></div>`
-                : `<div class="empty"><b>まだ3D部材がありません</b>工種と標高を確認してから生成してください。
-                     <div style="margin-top:10px"><button class="btn p" type="button" data-action="generate" data-testid="generate">${icon('cube')}3Dを生成</button></div>
+                : `<div class="empty"><span class="empty-ico">${icon('cube')}</span><b>まだ3D部材がありません</b>工種と標高を確認してから生成してください。
+                     <div class="empty-actions"><button class="btn p" type="button" data-action="generate" data-testid="generate">${icon('sparkles')}3Dを生成</button></div>
                    </div>`
             }
             ${
@@ -115,12 +115,12 @@ export function renderGenerate(ctx: AppContext): string {
                      </div>
                      <span class="hint">ドラッグで回転 / ホイールで拡大</span>
                    </div>`
-                : '<div class="empty" style="padding:60px 20px"><b>3Dを生成するとここに表示します</b></div>'
+                : `<div class="empty" style="padding:60px 20px"><span class="empty-ico">${icon('cube')}</span><b>3Dを生成するとここに表示します</b>左の「3Dを生成」を押してください。</div>`
             }
           </div>
         </div>
         <div class="card">
-          <div class="card-head">${icon('alert')}生成の規則</div>
+          <div class="card-head">${icon('info')}生成の規則</div>
           <div class="card-body" style="font-size:11.5px;color:var(--sub)">
             <p>・閉じた平面の輪郭を、標高の範囲で押し出します（方式A）。</p>
             <p>・終点と始点が0.5mまたは周長1%以内で開いている輪郭は、自動で閉じて警告を残します。</p>

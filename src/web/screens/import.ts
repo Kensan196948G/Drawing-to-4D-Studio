@@ -44,12 +44,12 @@ export function renderImport(ctx: AppContext): string {
           <div class="card-body">
             ${state.busy ? loadingBlock(state.busyMessage) : dropzoneBlock()}
             <div class="formats" aria-label="対応形式">
-              ${format('DXF', '対応', 'green', '線・ポリライン・文字・レイヤ')}
-              ${format('CSV', '対応', 'green', '工種コード・名称・開始・終了')}
-              ${format('DWG', '変換', 'navy', 'DXFへ変換してから')}
-              ${format('SXF', '第2段階', 'mute', '')}
-              ${format('PDF', '第2段階', 'mute', '')}
-              ${format('Excel', '第2段階', 'mute', '')}
+              ${format('DXF', '対応', 'green', '線・ポリライン・文字・レイヤ', 'file')}
+              ${format('CSV', '対応', 'green', '工種コード・名称・開始・終了', 'list')}
+              ${format('DWG', '変換', 'navy', 'DXFへ変換してから', 'refresh')}
+              ${format('SXF', '第2段階', 'mute', '', 'layers')}
+              ${format('PDF', '第2段階', 'mute', '', 'file')}
+              ${format('Excel', '第2段階', 'mute', '', 'grid')}
             </div>
           </div>
         </div>
@@ -62,17 +62,17 @@ export function renderImport(ctx: AppContext): string {
             ${
               drawing
                 ? `<div class="stats">
-                    <div class="stat"><small>線・輪郭</small><b data-testid="stat-entities">${drawing.counts.polyline + drawing.counts.line}</b></div>
-                    <div class="stat"><small>円</small><b>${drawing.counts.circle}</b></div>
-                    <div class="stat"><small>文字</small><b>${drawing.counts.text}</b></div>
-                    <div class="stat"><small>レイヤ</small><b data-testid="stat-layers">${drawing.layers.length}</b></div>
+                    <div class="stat"><span class="stat-ico">${icon('grid')}</span><small>線・輪郭</small><b data-testid="stat-entities">${drawing.counts.polyline + drawing.counts.line}</b></div>
+                    <div class="stat"><span class="stat-ico">${icon('target')}</span><small>円</small><b>${drawing.counts.circle}</b></div>
+                    <div class="stat"><span class="stat-ico">${icon('file')}</span><small>文字</small><b>${drawing.counts.text}</b></div>
+                    <div class="stat"><span class="stat-ico">${icon('layers')}</span><small>レイヤ</small><b data-testid="stat-layers">${drawing.layers.length}</b></div>
                   </div>
                   <dl class="kv">
                     <dt>単位</dt><dd>${escapeHtml(drawing.unitName)}（×${drawing.unitScale}）</dd>
                     <dt>範囲</dt><dd>${drawing.bounds.minX.toFixed(1)} … ${drawing.bounds.maxX.toFixed(1)} / ${drawing.bounds.minY.toFixed(1)} … ${drawing.bounds.maxY.toFixed(1)}</dd>
                     <dt>要素数</dt><dd>${drawing.entities.length.toLocaleString()}</dd>
                   </dl>`
-                : '<div class="empty"><b>まだ図面がありません</b>DXFを置くか、サンプル図面で試してください。</div>'
+                : `<div class="empty"><span class="empty-ico">${icon('upload')}</span><b>まだ図面がありません</b>DXFを置くか、サンプル図面で試してください。</div>`
             }
             <div style="height:12px"></div>
             <div class="card-head" style="border:0;padding:0 0 6px;background:transparent">${icon('file')}工程表</div>
@@ -148,8 +148,14 @@ function dropzoneBlock(): string {
   </div>`;
 }
 
-function format(name: string, status: string, tone: 'green' | 'navy' | 'mute', detail: string): string {
-  return `<div class="format"><span class="tag ${tone}">${status}</span><b>${name}</b><span class="muted">${detail}</span></div>`;
+function format(
+  name: string,
+  status: string,
+  tone: 'green' | 'navy' | 'mute',
+  detail: string,
+  iconName: string,
+): string {
+  return `<div class="format"><span class="tag ${tone}">${status}</span><b>${icon(iconName)} ${name}</b><span class="muted">${detail}</span></div>`;
 }
 
 export function mountImport(ctx: AppContext, root: HTMLElement): void {
@@ -166,12 +172,12 @@ export function mountImport(ctx: AppContext, root: HTMLElement): void {
     }
     ctx.setStep(2);
   });
-  root.querySelector('[data-action="dl-dxf"]')?.addEventListener('click', () =>
-    downloadText('seawall_plan.dxf', sampleDxf, 'application/dxf'),
-  );
-  root.querySelector('[data-action="dl-csv"]')?.addEventListener('click', () =>
-    downloadText('schedule.csv', sampleScheduleCsv, 'text/csv'),
-  );
+  root
+    .querySelector('[data-action="dl-dxf"]')
+    ?.addEventListener('click', () => downloadText('seawall_plan.dxf', sampleDxf, 'application/dxf'));
+  root
+    .querySelector('[data-action="dl-csv"]')
+    ?.addEventListener('click', () => downloadText('schedule.csv', sampleScheduleCsv, 'text/csv'));
   root.querySelector('[data-action="sample"]')?.addEventListener('click', () => {
     void loadSample(ctx);
   });
@@ -251,7 +257,10 @@ async function loadFiles(ctx: AppContext, files: File[]): Promise<void> {
       }
     }
     ctx.state.sampleLoaded = false;
-    ctx.toast('ok', `読み込みました${drawingLoaded ? '（図面）' : ''}${scheduleLoaded ? '（工程表）' : ''}。`);
+    ctx.toast(
+      'ok',
+      `読み込みました${drawingLoaded ? '（図面）' : ''}${scheduleLoaded ? '（工程表）' : ''}。`,
+    );
   } catch (error) {
     ctx.state.importError = `ERR-101/102: ${error instanceof Error ? error.message : String(error)}`;
     ctx.toast('err', ctx.state.importError);

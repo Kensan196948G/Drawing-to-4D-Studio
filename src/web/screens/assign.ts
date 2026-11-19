@@ -71,7 +71,7 @@ export function renderAssign(ctx: AppContext): string {
           </div>
         </div>
         <div class="card">
-          <div class="card-head">${icon('alert')}確認のヒント</div>
+          <div class="card-head">${icon('info')}確認のヒント</div>
           <div class="card-body" style="font-size:11.5px;color:var(--sub)">
             <p>・工種コード入りのレイヤ名（例: <code>4D_050_上部工</code>）は確からしさが高くなります。</p>
             <p>・DIM・法線・断面・文字のレイヤは「対象外」として除外しています。</p>
@@ -131,7 +131,10 @@ function rowHtml(ctx: AppContext, assignment: Assignment): string {
     <td class="num">${
       assignment.excluded
         ? '—'
-        : `<span class="pill ${confidenceTone}">${fmtPct(assignment.confidence)}</span>`
+        : `<span class="conf" title="推定の確からしさ ${fmtPct(assignment.confidence)}">
+             <span class="conf-track" aria-hidden="true"><i class="conf-fill ${confidenceTone}" style="width:${Math.round(assignment.confidence * 100)}%"></i></span>
+             <span class="pill ${confidenceTone}">${fmtPct(assignment.confidence)}</span>
+           </span>`
     }</td>
     <td>${
       assignment.excluded
@@ -188,7 +191,11 @@ export function mountAssign(ctx: AppContext, root: HTMLElement): void {
         state.dictionary = learnLayerTerm(state.dictionary, layer, workType.code);
         saveDictionary(state.dictionary);
         void ctx.api.learn(layer, workType.code).then((result) => {
-          if (!result.ok) ctx.toast('warn', `辞書のサーバ保存に失敗しました（ブラウザには保存済み）: ${result.error ?? ''}`);
+          if (!result.ok)
+            ctx.toast(
+              'warn',
+              `辞書のサーバ保存に失敗しました（ブラウザには保存済み）: ${result.error ?? ''}`,
+            );
         });
       }
       ctx.refresh();
@@ -258,5 +265,5 @@ export function mountAssign(ctx: AppContext, root: HTMLElement): void {
 }
 
 function emptyScreen(_ctx: AppContext, title: string, body: string): string {
-  return `<section class="view"><div class="empty"><b>${escapeHtml(title)}</b>${escapeHtml(body)}<div style="margin-top:10px"><button class="btn" type="button" data-action="back">SCR-01へ戻る</button></div></div></section>`;
+  return `<section class="view"><div class="empty"><span class="empty-ico">${icon('upload')}</span><b>${escapeHtml(title)}</b>${escapeHtml(body)}<div class="empty-actions"><button class="btn" type="button" data-action="back">${icon('arrow')}SCR-01へ戻る</button></div></div></section>`;
 }
